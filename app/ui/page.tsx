@@ -1,14 +1,20 @@
 'use client';
-import Modal1 from '@/components/common/modal/Modal1';
-import Modal2 from '@/components/common/modal/Modal2';
 import Popover from '@/components/common/Popover';
 import ModalContextProvider, { ModalDispatch, ModalDispatchContext } from '@/provider/ModalContext';
+import dynamic from 'next/dynamic';
 import { useContext, useState } from 'react';
 
 interface PageParams {
   params: {};
 }
-
+const Modal1 = dynamic(() => import('@/components/common/modal/Modal1'), {
+  ssr: false,
+  loading: () => <div>로딩중</div>,
+});
+const Modal2 = dynamic(() => import('@/components/common/modal/Modal2'), {
+  ssr: false,
+  loading: () => <div>로딩중</div>,
+});
 const ButtonSection = () => {
   const { pushModal, deleteModal } = useContext<ModalDispatch>(ModalDispatchContext);
 

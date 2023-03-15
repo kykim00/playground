@@ -3,7 +3,7 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface Modal {
   id: string;
-  ModalComponent: FC;
+  ModalComponent: React.ComponentType;
   type: string;
 }
 export interface ModalDispatch {
@@ -12,7 +12,10 @@ export interface ModalDispatch {
 }
 export const ModalContext = createContext<Modal[]>([]);
 
-export const ModalDispatchContext = createContext<ModalDispatch | {}>({});
+export const ModalDispatchContext = createContext<ModalDispatch>({
+  pushModal: () => {},
+  deleteModal: () => {},
+});
 
 export const Modals = () => {
   const modals = useContext(ModalContext);
