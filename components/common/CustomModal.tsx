@@ -1,29 +1,24 @@
 import styled from '@emotion/styled';
 
 interface ModalProps {
-  isOpen: boolean;
   title: string;
   onConfirm?: () => void;
   onClose?: () => void;
 }
 
-const Modal = ({ isOpen, title, onConfirm, onClose }: ModalProps) => {
+const CustomModal = ({ title, onConfirm, onClose }: ModalProps) => {
   return (
-    <>
-      {isOpen && (
-        <ModalBackground>
-          <ModalContainer>
-            <Title>{title}</Title>
-            <Button onClick={() => onConfirm?.()}>확인</Button>
-            <Button onClick={() => onClose?.()}>취소</Button>
-          </ModalContainer>
-        </ModalBackground>
-      )}
-    </>
+    // <ModalBackground>
+    <ModalContainer>
+      <Title>{title}</Title>
+      <Button onClick={() => onConfirm?.()}>확인</Button>
+      <Button onClick={() => onClose?.()}>취소</Button>
+    </ModalContainer>
+    // </ModalBackground>
   );
 };
 
-export default Modal;
+export default CustomModal;
 const ModalBackground = styled.div`
   display: block;
   position: fixed;
@@ -35,7 +30,7 @@ const ModalBackground = styled.div`
   z-index: 1000;
 `;
 const ModalContainer = styled.div`
-  position: fixed;
+  position: absolute;
   background-color: white;
   padding: 20px;
   border-radius: 4px;

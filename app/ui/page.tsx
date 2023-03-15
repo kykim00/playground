@@ -1,31 +1,61 @@
 'use client';
-import Modal from '@/components/common/Modal';
+import Modal1 from '@/components/common/modal/Modal1';
+import Modal2 from '@/components/common/modal/Modal2';
 import Popover from '@/components/common/Popover';
-import { useState } from 'react';
+import ModalContextProvider, { ModalDispatch, ModalDispatchContext } from '@/provider/ModalContext';
+import { useContext, useState } from 'react';
 
 interface PageParams {
   params: {};
 }
 
-const Page = ({ params }: PageParams) => {
-  const [isOpenModal, setIsOpenModal] = useState(false);
+const ButtonSection = () => {
+  const { pushModal, deleteModal } = useContext<ModalDispatch>(ModalDispatchContext);
 
-  const onToggle = () => setIsOpenModal(prev => !prev);
   return (
-    <div style={{ width: '1000px', margin: 'auto' }}>
-      <Popover
-        content={
-          <p>
-            Popover component
-            <br />
-          </p>
+    <>
+      <button
+        onClick={() =>
+          pushModal({
+            id: '1',
+            type: 'simple',
+            ModalComponent: Modal1,
+          })
         }
       >
-        <button>(?)</button>
-      </Popover>
-      <button onClick={onToggle}>모달 오픈</button>
-      <Modal isOpen={isOpenModal} title="모달1" onConfirm={onToggle} onClose={onToggle} />
-    </div>
+        모달1 오픈
+      </button>
+      <button
+        onClick={() =>
+          pushModal({
+            id: '2',
+            type: 'simple',
+            ModalComponent: Modal2,
+          })
+        }
+      >
+        모달2 오픈
+      </button>
+    </>
+  );
+};
+const Page = ({ params }: PageParams) => {
+  return (
+    <ModalContextProvider>
+      <div style={{ width: '1000px', margin: 'auto' }}>
+        <Popover
+          content={
+            <p>
+              Popover component
+              <br />
+            </p>
+          }
+        >
+          <button>(?)</button>
+        </Popover>
+      </div>
+      <ButtonSection />
+    </ModalContextProvider>
   );
 };
 
