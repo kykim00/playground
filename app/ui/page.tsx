@@ -59,8 +59,8 @@ const Page = ({ params }: PageParams) => {
         >
           <button>(?)</button>
         </Popover>
+        <ButtonSection />
       </div>
-      <ButtonSection />
     </ModalContextProvider>
   );
 };

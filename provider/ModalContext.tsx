@@ -1,9 +1,14 @@
 import { FC, Fragment } from 'react';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
+interface ModalProps {
+  title?: string;
+  onConfirm?: () => void;
+  onClose?: () => void;
+}
 interface Modal {
   id: string;
-  ModalComponent: React.ComponentType;
+  ModalComponent: React.ComponentType<ModalProps>;
   type: string;
 }
 export interface ModalDispatch {
@@ -20,11 +25,16 @@ export const ModalDispatchContext = createContext<ModalDispatch>({
 export const Modals = () => {
   const modals = useContext(ModalContext);
 
+  const { deleteModal } = useContext(ModalDispatchContext);
   return (
     <>
       {modals.map(({ id, ModalComponent, type }) => (
         <Fragment key={id}>
-          <ModalComponent />
+          <ModalComponent
+            onClose={() => {
+              deleteModal(id);
+            }}
+          />
         </Fragment>
       ))}
     </>
@@ -48,8 +58,10 @@ const ModalContextProvider = ({ children }: { children: ReactNode }) => {
   };
   return (
     <ModalContext.Provider value={modals}>
-      <ModalDispatchContext.Provider value={dispatch}>{children}</ModalDispatchContext.Provider>
-      <Modals />
+      <ModalDispatchContext.Provider value={dispatch}>
+        {children}
+        <Modals />
+      </ModalDispatchContext.Provider>
     </ModalContext.Provider>
   );
 };
