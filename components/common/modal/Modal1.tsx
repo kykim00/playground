@@ -1,7 +1,8 @@
+import { cloneElement } from 'react';
 import CustomModal from '../CustomModal';
 
-const Modal1 = ({ onClose }: { onClose: () => void }) => {
-  return <CustomModal title="타이틀" onClose={onClose} />;
+const Modal1 = ({ modalId }: { modalId: string }) => {
+  return cloneElement(<CustomModal title="타이틀" modalId={modalId} />);
 };
 
 export default Modal1;

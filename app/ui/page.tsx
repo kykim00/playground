@@ -48,7 +48,7 @@ const ButtonSection = () => {
 const Page = ({ params }: PageParams) => {
   return (
     <ModalContextProvider>
-      <div style={{ width: '1000px', margin: 'auto' }}>
+      <div style={{ width: '1000px', minHeight: '100vh', margin: 'auto' }}>
         <Popover
           content={
             <p>

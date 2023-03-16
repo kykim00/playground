@@ -1,20 +1,29 @@
+import { ModalDispatchContext } from '@/provider/ModalContext';
 import styled from '@emotion/styled';
-import Draggable from 'react-draggable'; // The default
+import { useContext, useEffect, useState } from 'react';
+import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
 interface ModalProps {
   title: string;
   onConfirm?: () => void;
   onClose?: () => void;
+  modalId: string;
 }
 
-const CustomModal = ({ title, onConfirm, onClose }: ModalProps) => {
+const CustomModal = ({ title, onConfirm, onClose, modalId }: ModalProps) => {
+  const { moveToTop, deleteModal } = useContext(ModalDispatchContext);
+  const handleToTop = () => {
+    // !isActive
+    moveToTop(modalId);
+  };
+
   return (
     // <ModalBackground>
-    <Draggable>
+    <Draggable handle=".modal-header" bounds={'parent'} onStart={handleToTop}>
       <ModalContainer>
-        <Title>{title}</Title>
+        <Title className="modal-header">{title}</Title>
         <Button onClick={() => onConfirm?.()}>확인</Button>
-        <Button onClick={() => onClose?.()}>취소</Button>
+        <Button onClick={() => deleteModal(modalId)}>취소</Button>
       </ModalContainer>
     </Draggable>
     // </ModalBackground>
@@ -46,6 +55,7 @@ const Title = styled.div`
   font-weight: bold;
   color: black;
   text-align: center;
+  cursor: move; /* grab */
 `;
 const Button = styled.button`
   border: none;
