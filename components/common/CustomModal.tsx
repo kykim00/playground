@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import Draggable from 'react-draggable'; // The default
 
 interface ModalProps {
   title: string;
@@ -9,11 +10,13 @@ interface ModalProps {
 const CustomModal = ({ title, onConfirm, onClose }: ModalProps) => {
   return (
     // <ModalBackground>
-    <ModalContainer>
-      <Title>{title}</Title>
-      <Button onClick={() => onConfirm?.()}>확인</Button>
-      <Button onClick={() => onClose?.()}>취소</Button>
-    </ModalContainer>
+    <Draggable>
+      <ModalContainer>
+        <Title>{title}</Title>
+        <Button onClick={() => onConfirm?.()}>확인</Button>
+        <Button onClick={() => onClose?.()}>취소</Button>
+      </ModalContainer>
+    </Draggable>
     // </ModalBackground>
   );
 };

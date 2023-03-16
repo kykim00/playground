@@ -1,10 +1,10 @@
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface ModalProps {
   title?: string;
   onConfirm?: () => void;
-  onClose?: () => void;
+  onClose: () => void;
 }
 interface Modal {
   id: string;
