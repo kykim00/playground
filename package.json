@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "workspaces": [
+    "workspaces/*"
+  ],
+  "scripts": {
+    "start": "yarn workspaces run start"
+  }
+}
