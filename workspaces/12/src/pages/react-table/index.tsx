@@ -1,11 +1,14 @@
+import Table from '@/components/Table';
 import axios from 'axios';
-import React, { useEffect, useMemo, useState } from 'react';
-import { usePagination, useSortBy, useTable } from 'react-table';
-import { Products } from '../api/table';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ReactToPrint from 'react-to-print';
+import { Product, Products } from '../api/table';
 
 export default function RT() {
+  const tableRef = useRef();
+
   const [data, setData] = useState<Products>();
-  const [cpyData, setCpyData] = React.useState<Products>();
+  const [cpyData, setCpyData] = React.useState<Product[]>();
   const [skipPageReset, setSkipPageReset] = React.useState(false);
 
   const updateMyData = (rowIndex, columnId, value) => {
@@ -48,154 +51,14 @@ export default function RT() {
   const rows = useMemo(() => data?.products ?? [], [data]);
   if (!data) return;
 
-  return <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} />;
-}
-
-const EditableCell = ({
-  value: initialValue,
-  row: { index },
-  column: { id },
-  updateMyData, // This is a custom function that we supplied to our table instance
-}: any) => {
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = React.useState(initialValue);
-
-  const onChange = e => {
-    setValue(e.target.value);
-  };
-
-  // We'll only update the external data when the input is blurred
-  // const onBlur = () => {
-  //   updateMyData(index, id, value);
-  // };
-
-  // If the initialValue is changed external, sync it up with our state
-  React.useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  return <input value={value} onChange={onChange} />;
-};
-
-const Span = ({ value }) => {
-  return <span>{value}</span>;
-};
-const defaultColumn = {
-  Input: EditableCell,
-  Cell: Span,
-};
-
-function Table({ columns, data, updateMyData, skipPageReset }: any) {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize },
-  } = useTable(
-    {
-      columns,
-      data,
-      defaultColumn,
-      autoResetPage: !skipPageReset,
-      updateMyData,
-      initialState: {
-        pageIndex: 1,
-        pageSize: 15,
-      },
-    },
-    useSortBy,
-    usePagination,
-  );
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                //@ts-ignore
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map(row => {
-            prepareRow(row);
-
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  const isEditable = cell.column.Header !== 'ID';
-
-                  return <td {...cell.getCellProps()}>{cell.render(isEditable ? 'Input' : 'Cell')}</td>;
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <span>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <span>
-          | Go to page:{' '}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-            style={{ width: '100px' }}
-          />
-        </span>{' '}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+      <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current} />
+      <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} />
     </>
   );
 }
+
 // import React from 'react';
 // import styled from '@emotion/styled';
 // import { useTable, usePagination } from 'react-table';
