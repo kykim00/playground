@@ -45,7 +45,7 @@ input {
 }
 
 input:hover {
-  background-color: #fffaf3;
+  background-color: #333;
 }
 
 input:focus {
