@@ -1,7 +1,17 @@
-import React from 'react';
+import { useReactTable } from '@tanstack/react-table';
+import React, { ChangeEvent, Ref } from 'react';
 import { forwardRef } from 'react';
 import { usePagination, useSortBy, useTable } from 'react-table';
-
+export interface TableProps {
+  columns: Column[];
+  data: Record<string, any>[];
+  updateMyData: any;
+  skipPageReset: boolean;
+}
+interface Column {
+  Header: string;
+  accessor: string;
+}
 const EditableCell = ({
   value: initialValue,
   row: { index },
@@ -11,7 +21,7 @@ const EditableCell = ({
   // We need to keep and update the state of the cell normally
   const [value, setValue] = React.useState(initialValue);
 
-  const onChange = e => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
@@ -28,7 +38,7 @@ const EditableCell = ({
   return <input value={value} onChange={onChange} />;
 };
 
-const Span = ({ value }) => {
+const Span = ({ value }: { value: string }) => {
   return <span>{value}</span>;
 };
 const defaultColumn = {
@@ -36,12 +46,11 @@ const defaultColumn = {
   Cell: Span,
 };
 
-const Table = ({ columns, data, updateMyData, skipPageReset }, ref) => {
+const Table = ({ columns, data, updateMyData, skipPageReset }: TableProps, ref: Ref) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
     prepareRow,
     page,
     canPreviousPage,
@@ -59,6 +68,7 @@ const Table = ({ columns, data, updateMyData, skipPageReset }, ref) => {
       data,
       defaultColumn,
       autoResetPage: !skipPageReset,
+      // @ts-ignore
       updateMyData,
       initialState: {
         pageIndex: 1,
@@ -68,6 +78,7 @@ const Table = ({ columns, data, updateMyData, skipPageReset }, ref) => {
     useSortBy,
     usePagination,
   );
+
   return (
     <>
       <table {...getTableProps()} ref={ref}>

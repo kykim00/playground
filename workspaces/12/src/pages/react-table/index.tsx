@@ -6,6 +6,8 @@ import { CSVLink } from 'react-csv';
 import ReactToPrint from 'react-to-print';
 import { Product, Products } from '../api/table';
 import { downloadExcel } from 'react-export-table-to-excel';
+import { TanstackTable } from '@/components/TanstackTable';
+import { ColumnDef } from '@tanstack/react-table';
 
 export default function RT() {
   const tableRef = useRef();
@@ -36,12 +38,11 @@ export default function RT() {
       setExportButtonDisabled(false);
     }, 1000);
   };
-  const updateMyData = (rowIndex, columnId, value) => {
+  const updateMyData = (rowIndex: number, columnId: number, value: string) => {
     setSkipPageReset(true);
     setCpyData(old => {
+      if (!old) return old;
       old.map((row, index) => {
-        console.log(row, index, rowIndex, columnId, value);
-
         if (index === rowIndex) {
           return {
             ...old[rowIndex],
@@ -73,6 +74,17 @@ export default function RT() {
       ),
     [data],
   );
+  const newColumns = useMemo<ColumnDef<Product>[]>(
+    () =>
+      Object.entries(data?.products[0] || []).map(([key, value]) =>
+        Object.assign({
+          accessorKey: key,
+          header: key.toLocaleUpperCase(),
+          footer: value,
+        }),
+      ),
+    [data],
+  );
   const rows = useMemo(() => data?.products ?? [], [data]);
   const headers = useMemo(
     () => Object.keys(data?.products[0] || []).map(key => Object.assign({ label: startCase(key), key })),
@@ -100,8 +112,9 @@ export default function RT() {
       <button disabled={exportButtonDisabled} onClick={handleExport}>
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
-      <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current} />
-      <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} />
+      <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
+      <TanstackTable columns={newColumns} data={rows} showFooter />
+      {/* <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} /> */}
     </>
   );
 }
