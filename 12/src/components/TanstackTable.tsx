@@ -6,10 +6,16 @@ import {
   getFilteredRowModel,
   RowData,
 } from '@tanstack/react-table';
-import type { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import React from 'react';
 import { Product } from '@/pages/api/table';
+
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+  }
+}
 
 interface ReactTableProps<T extends object> {
   data: T[];
