@@ -1,20 +1,27 @@
-import Table from '@/components/Table';
 import axios from 'axios';
-import { startCase } from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { CSVLink } from 'react-csv';
 import ReactToPrint from 'react-to-print';
 import { Product, Products } from '../api/table';
 import { downloadExcel } from 'react-export-table-to-excel';
-import { TanstackTable } from '@/components/TanstackTable';
-import { ColumnDef } from '@tanstack/react-table';
+import TanstackTable from '@/components/TanstackTable';
+import useTable from '@/hooks/useTable';
+import { useQuery } from '@tanstack/react-query';
+
+const getData = async () => {
+  const res = await axios.get<Products>('https://dummyjson.com/products');
+  return res.data;
+};
 
 export default function RT() {
-  const tableRef = useRef();
+  const { data } = useQuery<Products>(['Products'], getData);
+  const tableData = data?.products || [{} as Product];
+  const showInputCond = {
+    columns: ['id', 'title'],
+    rows: ['10'],
+  };
+  const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable(tableData, showInputCond);
 
-  const [data, setData] = useState<Products>();
-  const [cpyData, setCpyData] = React.useState<Product[]>();
-  const [skipPageReset, setSkipPageReset] = React.useState(false);
   const [exportButtonDisabled, setExportButtonDisabled] = React.useState(false);
 
   const handleExport = () => {
@@ -38,58 +45,7 @@ export default function RT() {
       setExportButtonDisabled(false);
     }, 1000);
   };
-  const updateMyData = (rowIndex: number, columnId: number, value: string) => {
-    setSkipPageReset(true);
-    setCpyData(old => {
-      if (!old) return old;
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...old[rowIndex],
-            [columnId]: value,
-          };
-        }
-        return row;
-      });
-    });
-  };
-  useEffect(() => {
-    getData();
-  }, []);
 
-  const getData = async () => {
-    if (data) return;
-    try {
-      const res = await axios.get<Products>('https://dummyjson.com/products');
-      setData(res.data);
-      setCpyData(res.data.products);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  const columns = useMemo(
-    () =>
-      Object.keys(data?.products[0] || []).map(key =>
-        Object.assign({ accessor: key, Header: key.toLocaleUpperCase(), sortType: 'basic' }),
-      ),
-    [data],
-  );
-  const newColumns = useMemo<ColumnDef<Product>[]>(
-    () =>
-      Object.entries(data?.products[0] || []).map(([key, value]) =>
-        Object.assign({
-          accessorKey: key,
-          header: key.toLocaleUpperCase(),
-          footer: value,
-        }),
-      ),
-    [data],
-  );
-  const rows = useMemo(() => data?.products ?? [], [data]);
-  const headers = useMemo(
-    () => Object.keys(data?.products[0] || []).map(key => Object.assign({ label: startCase(key), key })),
-    [data],
-  );
   if (!data || !cpyData) return;
 
   return (
@@ -113,7 +69,7 @@ export default function RT() {
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
-      <TanstackTable columns={newColumns} data={rows} />
+      <TanstackTable<Product> columns={columns} data={rows} updateData={updateCpyData} />
       {/* <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} /> */}
     </>
   );
