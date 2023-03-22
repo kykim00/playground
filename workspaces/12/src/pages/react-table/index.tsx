@@ -1,8 +1,11 @@
 import Table from '@/components/Table';
 import axios from 'axios';
+import { startCase } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { CSVLink } from 'react-csv';
 import ReactToPrint from 'react-to-print';
 import { Product, Products } from '../api/table';
+import { downloadExcel } from 'react-export-table-to-excel';
 
 export default function RT() {
   const tableRef = useRef();
@@ -10,7 +13,29 @@ export default function RT() {
   const [data, setData] = useState<Products>();
   const [cpyData, setCpyData] = React.useState<Product[]>();
   const [skipPageReset, setSkipPageReset] = React.useState(false);
+  const [exportButtonDisabled, setExportButtonDisabled] = React.useState(false);
 
+  const handleExport = () => {
+    setExportButtonDisabled(true);
+
+    if (!cpyData) {
+      alert('추출할 데이터가 없습니다.');
+      return;
+    }
+
+    downloadExcel({
+      fileName: 'data.xlsx',
+      sheet: 'sheet1',
+      tablePayload: {
+        header: Object.keys(cpyData[0]),
+        body: cpyData.map(data => Object.values(data)),
+      },
+    });
+
+    setTimeout(() => {
+      setExportButtonDisabled(false);
+    }, 1000);
+  };
   const updateMyData = (rowIndex, columnId, value) => {
     setSkipPageReset(true);
     setCpyData(old => {
@@ -49,10 +74,32 @@ export default function RT() {
     [data],
   );
   const rows = useMemo(() => data?.products ?? [], [data]);
-  if (!data) return;
+  const headers = useMemo(
+    () => Object.keys(data?.products[0] || []).map(key => Object.assign({ label: startCase(key), key })),
+    [data],
+  );
+  if (!data || !cpyData) return;
 
   return (
     <>
+      <CSVLink
+        data={cpyData}
+        headers={headers}
+        // confirm 창에서 '확인'을 눌렀을 때만 csv 파일 다운로드
+        onClick={() => {
+          if (confirm('csv파일을 다운로드 받겠습니까?')) {
+            return true;
+          } else {
+            return false;
+          }
+        }}
+        filename={`목데이터_테이블}`}
+      >
+        CSV 다운로드
+      </CSVLink>
+      <button disabled={exportButtonDisabled} onClick={handleExport}>
+        {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
+      </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current} />
       <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} />
     </>
