@@ -11,19 +11,12 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import React from 'react';
 import { Product } from '@/pages/api/table';
 
-interface ReactTableProps {
-  data: Product[];
-  columns: ColumnDef<Product>[];
-  showFooter: boolean;
+interface ReactTableProps<T extends object> {
+  data: T[];
+  columns: ColumnDef<T>[];
 }
 
-declare module '@tanstack/react-table' {
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
-  }
-}
-
-export const TanstackTable = ({ data, columns, showFooter }: ReactTableProps) => {
+export const TanstackTable = ({ data, columns }: ReactTableProps<Product>) => {
   const rerender = useReducer(() => ({}), {})[1];
   const refreshData = () => {};
 

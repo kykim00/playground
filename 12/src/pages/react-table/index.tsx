@@ -113,7 +113,7 @@ export default function RT() {
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
-      <TanstackTable columns={newColumns} data={rows} showFooter />
+      <TanstackTable columns={newColumns} data={rows} />
       {/* <Table columns={columns} data={rows} updateMyData={updateMyData} skipPageReset={skipPageReset} ref={tableRef} /> */}
     </>
   );
