@@ -7,8 +7,8 @@ interface ShowInputCondType {
   rows?: string[];
 }
 
-function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType) {
-  const keysOfData = Object.keys(data[0]);
+function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType, hideColumns?: string[]) {
+  const keysOfData = Object.keys(data[0]).filter(key => !hideColumns?.includes(key));
   const [cpyData, setCpyData] = React.useState(data);
   const tableRef = React.useRef();
   const headers = React.useMemo(() => keysOfData.map(key => Object.assign({ label: startCase(key), key })), [data]);
@@ -18,7 +18,7 @@ function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType
       keysOfData.map(key =>
         Object.assign({
           accessorKey: key,
-          header: key.toLocaleUpperCase(),
+          header: startCase(key),
           cell: ({ getValue, row, column, table, renderValue }) => {
             const initialValue = getValue();
             const [value, setValue] = React.useState(initialValue);

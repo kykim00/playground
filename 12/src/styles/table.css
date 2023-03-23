@@ -1,14 +1,5 @@
 body {
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-.container {
-  width: 100%;
-  max-width: 1000px;
-  padding: 0 10px;
-  margin: 0 auto;
-  margin-top: 70px;
 }
 
 .title {
@@ -26,19 +17,19 @@ tr th {
   font-size: 18px;
   padding: 12px;
   border: 1px solid #eeeeee;
-  text-align: left;
+  /* text-align: left; */
   background-color: rgba(217, 221, 146, 0.2);
 }
 
 tr td {
   border: 1px solid #eeeeee;
-  text-align: left;
+  /* text-align: left; */
 }
 
 input {
   font-size: 16px;
   background-color: transparent;
-  border: none;
+  border: 1px solid #ccc;
   width: 91%;
   padding: 12px 12px;
   font-family: 'Poppins', sans-serif;
