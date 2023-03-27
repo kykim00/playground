@@ -402,6 +402,11 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
+date-fns@^2.28.0:
+  version "2.29.3"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
+  integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
+
 delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
@@ -650,6 +655,13 @@ react-to-print@^2.14.12:
   integrity sha512-qFJAwvDFd95Z+FWNqitt+HaB1/z+Zdd0MMrNOPUSus3fG32vqv512yB+HXhQ94J3HKoyqaIg44v0Zfc6xUBqlg==
   dependencies:
     prop-types "^15.8.1"
+
+react-ymd-date-select@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-ymd-date-select/-/react-ymd-date-select-0.3.0.tgz#9e8bd3fcbdc6393b1e5dcb7bb6d875ba615ff3de"
+  integrity sha512-frX9m7eo7dC6j8nJr1pWEq+Ti++ojftVbBDeivrozxervvkZTzPW3PgZA8hwTQwED5NmslaeXBVZyUOBu89a6w==
+  dependencies:
+    date-fns "^2.28.0"
 
 react@18.2.0:
   version "18.2.0"
