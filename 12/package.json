@@ -28,7 +28,8 @@
     "react-hook-form": "^7.43.7",
     "react-to-print": "^2.14.12",
     "react-ymd-date-select": "^0.3.0",
-    "typescript": "5.0.2"
+    "typescript": "5.0.2",
+    "zustand": "^4.3.6"
   },
   "devDependencies": {}
 }
