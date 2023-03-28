@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import '@/styles/table.css';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { appWithTranslation } from 'next-i18next';
 
 const client = new QueryClient({
   defaultOptions: {
@@ -15,7 +16,7 @@ const client = new QueryClient({
     },
   },
 });
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={client}>
       <ErrorBoundary fallback={<h1>Error occured!</h1>}>
@@ -23,4 +24,5 @@ export default function App({ Component, pageProps }: AppProps) {
       </ErrorBoundary>
     </QueryClientProvider>
   );
-}
+};
+export default appWithTranslation(App);
