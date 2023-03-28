@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import ViewSource from '../components/view-source';
 import mountains from '../public/mountains.jpg';
+import cat from '../public/cat.jpg';
+import dog from '../public/dog.jpg';
 
 const Fill = () => (
   <div>
@@ -21,7 +23,76 @@ const Fill = () => (
     />
     {/* </div> */}
     <h2>img contain</h2>
-    <img src={'https://picsum.photos/200/300'}></img>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+    <h2>img contain</h2>
+    <img src={'https://picsum.photos/200/300'} loading="lazy"></img>
+
     <h2>Contain</h2>
     {/* <div style={{ position: 'relative', width: '300px', height: '500px' }}> */}
     <Image
@@ -38,7 +109,7 @@ const Fill = () => (
     {/* <div style={{ position: 'relative', width: '300px', height: '500px' }}> */}
     <Image
       alt="Mountains"
-      src={mountains}
+      src={dog}
       // quality={100}
       // fill
       sizes="100vw"
@@ -51,10 +122,11 @@ const Fill = () => (
     <div style={{ position: 'relative', width: '300px', height: '500px' }}>
       <Image
         alt="Mountains"
-        src={mountains}
+        src={cat}
         // quality={100}
 
         // fill
+        priority
         sizes="50vw"
         style={{
           objectFit: 'none',
