@@ -15,6 +15,7 @@ const I18nPage = () => {
       <h1>
         <Trans i18nKey="title">{t('book:title')}</Trans>
       </h1>
+
       <ul>
         <li>{t('book:name', { name })}</li>
         <li>{t('book:email', { email: 'ian@sample.com' })}</li>
@@ -25,7 +26,7 @@ const I18nPage = () => {
       <Link href="/i18n" locale="ko">
         <button>{t('common:ko')}</button>
       </Link>
-      <ChangeLocaleButtons />
+      {/* <ChangeLocaleButtons /> */}
     </>
   );
 };
