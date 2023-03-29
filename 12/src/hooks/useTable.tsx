@@ -55,8 +55,6 @@ function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType
     setCpyData(updatedCpyData);
   };
 
-  if (!data || data.length === 0) return {};
-
   return { tableRef, cpyData, updateCpyData, columns, rows, headers };
 }
 
