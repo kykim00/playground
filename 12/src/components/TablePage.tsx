@@ -1,41 +1,14 @@
-import axios from 'axios';
 import React from 'react';
 import { CSVLink } from 'react-csv';
 import ReactToPrint from 'react-to-print';
-import { Product, Products } from '../pages/api/table';
+import { Product } from '../pages/api/table';
 import { downloadExcel } from 'react-export-table-to-excel';
 import TanstackTable from '@/components/TanstackTable';
 import useTable from '@/hooks/useTable';
-import { useQuery } from '@tanstack/react-query';
-import { Agent } from 'https';
-
-function delay(ms: number) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      resolve(console.log(`${ms}ms delay`));
-    }, ms);
-  });
-}
-
-const getData = async (): Promise<Products> => {
-  await delay(2000);
-  const res = await axios.get('https://dummyjson.com/products', {
-    // to avoid SELF_SIGNED_CERT_IN_CHAIN Error
-    httpsAgent: new Agent({
-      rejectUnauthorized: false,
-    }),
-  });
-  return res.data;
-};
+import { useGetProducts } from '@/hooks/apis/products/querys';
 
 export default function TablePage() {
-  const { data = [{} as Product] } = useQuery({
-    queryKey: ['key'],
-    queryFn: getData,
-    // initialData: Object.assign({}, { products: [{} as Product], total: 0, skip: 0, limit: 0 }),
-    suspense: true,
-    select: data => data.products,
-  });
+  const { data = [{} as Product] } = useGetProducts();
 
   const showInputCond = {
     columns: ['description'],
@@ -54,12 +27,15 @@ export default function TablePage() {
       return;
     }
 
+    const header = Object.keys(cpyData[0]);
+    const body = cpyData.map(data => Object.values(data).map(value => value.toString()));
+
     downloadExcel({
       fileName: 'data.xlsx',
       sheet: 'sheet1',
       tablePayload: {
-        header: Object.keys(cpyData[0]),
-        body: cpyData.map(data => Object.values(data)),
+        header,
+        body,
       },
     });
 
