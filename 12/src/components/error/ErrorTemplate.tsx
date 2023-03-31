@@ -1,21 +1,16 @@
 import React, { ReactNode } from 'react';
 import Head from 'next/head';
+import $ from './errorTemplate.module.scss';
 
 interface ErrorTemplateProps {
-  statusCode: string;
+  statusCode: string | number;
   messageTitle: string;
   messageText: string | ReactNode;
   icon: string | ReactNode;
-  button: ReactNode;
+  button?: ReactNode;
 }
 const ErrorTemplate = ({ statusCode, messageTitle, messageText, icon, button }: ErrorTemplateProps) => (
-  <>
-    <Head>
-      <title>어퍼 ERP</title>
-      <style>{`
-          #wrap { height: 100%; }
-        `}</style>
-    </Head>
+  <div className={$.module}>
     <div className="error-container">
       <div className="error-row">
         <div className="error-cell">
@@ -29,7 +24,7 @@ const ErrorTemplate = ({ statusCode, messageTitle, messageText, icon, button }: 
         </div>
       </div>
     </div>
-  </>
+  </div>
 );
 
 export default ErrorTemplate;

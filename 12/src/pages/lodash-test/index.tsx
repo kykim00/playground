@@ -1,6 +1,5 @@
 import identity from 'lodash/identity';
 import groupByLodash from 'lodash/groupBy';
-import { groupBy as groupByUtil } from '@/utils/groupBy';
 import { useForm } from 'react-hook-form';
 import { pickBy } from 'lodash';
 
@@ -20,11 +19,8 @@ const Lodash = () => {
     { a: '1', e: 2 },
     { a: '2', f: '3' },
   ];
-  const obj = {
-    identity: identity(1),
-    groupByUtil: groupByUtil(array, 'a'),
-    groupByLodash: groupByLodash(array, 'a'),
-  };
+  const obj = groupByLodash(array, 'a');
+
   const { register, handleSubmit } = useForm({
     defaultValues: {
       firstName: '',

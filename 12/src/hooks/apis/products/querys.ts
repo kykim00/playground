@@ -8,7 +8,7 @@ export const useGetProducts = () => {
 
 export const useGetProductDetail = (params: number) => {
   return useCoreQuery(productKeys.detail(params), () => getProductDetail(params), {
-    enabled: !!params || params === 0,
+    enabled: params >= 0,
     keepPreviousData: true,
   });
 };
