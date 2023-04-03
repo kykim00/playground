@@ -3,12 +3,7 @@ import axios from 'axios';
 import { Agent } from 'https';
 
 export const getProductData = async () => {
-  const res = await axios.get('https://dummyjson.com/products', {
-    // to avoid SELF_SIGNED_CERT_IN_CHAIN Error
-    httpsAgent: new Agent({
-      rejectUnauthorized: false,
-    }),
-  });
+  const res = await axios.get('/api/table');
   return productsSchema.parse(res.data);
 };
 

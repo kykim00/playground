@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-// import TablePage from '@/components/TablePage';
 
 const TablePage = dynamic(() => import('@/components/TablePage'), {
   loading: () => <h1>Loading...</h1>,

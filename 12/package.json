@@ -29,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-export-table-to-excel": "^1.0.6",
     "react-hook-form": "^7.43.7",
+    "react-hot-toast": "^2.4.0",
     "react-i18next": "^12.2.0",
     "react-to-print": "^2.14.12",
     "react-ymd-date-select": "^0.3.0",
