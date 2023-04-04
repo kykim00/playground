@@ -90,8 +90,8 @@ const SampleForm = () => {
         <label>매출</label>
         <button type="submit">제출</button>
       </form>
-      <button onClick={() => open(() => <PostcodeModal onSubmit={setValue} />, 'PostcodeModal')}>주소 검색</button>
-      <button onClick={() => open(() => <ModalOne onConfirm={() => console.log(1)} />, 'ModalOne')}>샘플 모달</button>
+      <button onClick={() => open(PostcodeModal, { onConfirm: setValue })}>주소 검색</button>
+      <button onClick={() => open(ModalOne, { onConfirm: () => console.log(1) })}>샘플 모달</button>
     </Container>
   );
 };

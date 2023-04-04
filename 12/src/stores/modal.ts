@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import { logger } from './';
 
+interface ModalProps {
+  onConfirm?: () => void;
+  onClose?: () => void;
+}
+
 interface Modal {
   name: string;
   component: React.FC & { name?: string };
+  props?: ModalProps;
   zIndex: number;
 }
+
 interface State {
   modals: Modal[];
   lastZIndex: number;
@@ -13,7 +20,7 @@ interface State {
 const baseZIndex = 1000;
 
 interface Action {
-  open: (component: Modal['component'], name?: string) => void;
+  open: (component: Modal['component'], props?: ModalProps) => void;
   close: (name: Modal['name']) => void;
 }
 
@@ -22,16 +29,16 @@ const useModalStore = create<State & Action>()(
     set => ({
       modals: [],
       lastZIndex: baseZIndex,
-      open: (component, name) =>
+      open: (component, props) =>
         set(state => {
-          const componentName = name ?? component.name;
-          if (state.modals.every(prev => prev.name !== componentName)) {
+          if (state.modals.every(prev => prev.name !== component.name)) {
             return {
               modals: [
                 ...state.modals,
                 {
-                  name: componentName,
+                  name: component.name,
                   component,
+                  props,
                   zIndex: state.lastZIndex + 1,
                 },
               ],

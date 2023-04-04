@@ -6,7 +6,7 @@ const Modals = () => {
   return (
     <div>
       {modals.map(modal => {
-        const props = modal.component.props;
+        const props = modal.props;
         return React.cloneElement(<modal.component key={modal.zIndex} {...props} />, {
           onClose: () => close(modal.name),
         });
