@@ -1,17 +1,22 @@
 import useModalStore from '@/stores/modal';
 import React from 'react';
+import Portal from './Portal';
 
 const Modals = () => {
   const [modals, close] = useModalStore(state => [state.modals, state.close]);
   return (
-    <div>
+    <Portal>
       {modals.map(modal => {
-        const props = modal.props;
-        return React.cloneElement(<modal.component key={modal.zIndex} {...props} />, {
-          onClose: () => close(modal.name),
-        });
+        const { component: ModalComponent, props, zIndex, name } = modal;
+        return (
+          <div style={{ zIndex }}>
+            {React.cloneElement(<ModalComponent key={name} {...props} />, {
+              onClose: () => close(name),
+            })}
+          </div>
+        );
       })}
-    </div>
+    </Portal>
   );
 };
 
