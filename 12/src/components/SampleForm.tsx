@@ -6,7 +6,9 @@ import { useForm } from 'react-hook-form';
 import Input from './ui/TextInput';
 import React from 'react';
 import RadioInput from './ui/RadioInput';
-import PostcodeModal from './ui/PostcodeModal';
+import PostcodeModal from './ui/modals/PostcodeModal';
+import useModalStore from '@/stores/modal';
+import ModalOne from './ui/modals/ModalOne';
 
 type IForm = z.infer<typeof schema>;
 
@@ -59,6 +61,7 @@ const SampleForm = () => {
     console.log(error);
   };
 
+  const open = useModalStore(state => state.open);
   return (
     <Container>
       <form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -85,9 +88,10 @@ const SampleForm = () => {
         <label>매입</label>
         <input {...register('transaction')} value={'1'} type="checkbox" />
         <label>매출</label>
-        <PostcodeModal onSubmit={setValue} />
         <button type="submit">제출</button>
       </form>
+      <button onClick={() => open(() => <PostcodeModal onSubmit={setValue} />, 'PostcodeModal')}>주소 검색</button>
+      <button onClick={() => open(() => <ModalOne onConfirm={() => console.log(1)} />, 'ModalOne')}>샘플 모달</button>
     </Container>
   );
 };

@@ -6,6 +6,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import { appWithTranslation } from 'next-i18next';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import toast, { Toaster } from 'react-hot-toast';
+import Modals from '@/components/ui/modals';
 
 const client = new QueryClient({
   defaultOptions: {
@@ -33,6 +34,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <ErrorBoundary fallback={<h1>Error occured!</h1>}>
         <Component {...pageProps} />
         <Toaster />
+        <Modals />
         <ReactQueryDevtools />
       </ErrorBoundary>
     </QueryClientProvider>
