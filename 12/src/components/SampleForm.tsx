@@ -3,9 +3,9 @@ import styled from '@emotion/styled';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import Input from './ui/TextInput';
+import TextInput from './ui/input/TextInput';
 import React, { FunctionComponent } from 'react';
-import RadioInput from './ui/RadioInput';
+import RadioInput from './ui/input/RadioInput';
 import PostcodeModal from './ui/modals/PostcodeModal';
 import useModalStore from '@/stores/modal';
 // import ModalOne from './ui/modals/ModalOne';
@@ -70,15 +70,15 @@ const SampleForm = () => {
     <Container>
       <form onSubmit={handleSubmit(onSubmit, onError)}>
         <label>상품 코드</label>
-        <Input control={control} {...register('code')} />
+        <TextInput control={control} {...register('code')} />
         <label>거래처명</label>
-        <Input control={control} {...register('accountName')} />
+        <TextInput control={control} {...register('accountName')} />
         <label>주소</label>
-        <Input control={control} {...register('address1')} disabled />
+        <TextInput control={control} {...register('address1')} disabled />
         <label>상세 주소</label>
-        <Input control={control} {...register('address2')} />
+        <TextInput control={control} {...register('address2')} />
         <label>사업자 번호</label>
-        <Input control={control} {...register('companyNumber')} />
+        <TextInput control={control} {...register('companyNumber')} />
         <label>사업자 구분</label>
         <input type="radio" {...register('biz_type')} value={BIZ_TYPE.COMPANY} />
         <label>법인(개인)</label>

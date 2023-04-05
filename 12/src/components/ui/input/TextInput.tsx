@@ -1,7 +1,7 @@
 import { TControl } from '@/types/form';
 import { ForwardedRef, forwardRef } from 'react';
 import { useController } from 'react-hook-form';
-import { Input, InputProps } from './input';
+import { Input, InputProps } from '.';
 
 function TextInput(
   { control, name, rules, type = 'text', disabled = false, value = undefined }: InputProps & TControl<any>,

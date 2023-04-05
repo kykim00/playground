@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
 import { ForwardedRef, forwardRef } from 'react';
+import { ChangeHandler } from 'react-hook-form/dist/types';
 
 type InputType = 'number' | 'text' | 'password' | 'radio' | 'checkbox';
-
+type EventType = (() => void) | ((e: React.ChangeEvent<HTMLInputElement>) => void) | ChangeHandler;
 export interface InputProps {
   /**
    * Is this the principal call to action on the page?
@@ -19,8 +20,9 @@ export interface InputProps {
   /**
    * Optional change event handler
    */
-  onChange?: () => void;
+  onChange?: EventType;
   // style variant props
+  onBlur?: EventType;
 }
 
 /**
