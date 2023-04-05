@@ -4,11 +4,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Input from './ui/TextInput';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import RadioInput from './ui/RadioInput';
 import PostcodeModal from './ui/modals/PostcodeModal';
 import useModalStore from '@/stores/modal';
-import ModalOne from './ui/modals/ModalOne';
+// import ModalOne from './ui/modals/ModalOne';
+import dynamic from 'next/dynamic';
+import ModalTwo from './ui/modals/ModalTwo';
+
+const ModalOne = dynamic(() => import('./ui/modals/ModalOne'));
 
 type IForm = z.infer<typeof schema>;
 
@@ -65,8 +69,6 @@ const SampleForm = () => {
   return (
     <Container>
       <form onSubmit={handleSubmit(onSubmit, onError)}>
-        {/* <FormWithControlProvider onSubmit={handleSubmit(onSubmit)} control={control} render={(control) => }>
-        </FormWithControlProvider> */}
         <label>상품 코드</label>
         <Input control={control} {...register('code')} />
         <label>거래처명</label>
@@ -91,18 +93,12 @@ const SampleForm = () => {
         <button type="submit">제출</button>
       </form>
       <button onClick={() => open(PostcodeModal, { onConfirm: setValue })}>주소 검색</button>
-      <button onClick={() => open(ModalOne, { onConfirm: () => console.log(1) })}>샘플 모달</button>
+      <button onClick={() => open(ModalOne, { onConfirm: () => console.log(1) })}>샘플 모달1</button>
+      <button onClick={() => open(ModalTwo, { onConfirm: () => console.log(1) })}>샘플 모달2</button>
     </Container>
   );
 };
 
-// const FormWithControlProvider = ({ children, onSubmit, control, render }) => (
-//   <form onSubmit={onSubmit}>
-//     {React.Children.map(children, child => {
-//       return render(child, { control });
-//     })}
-//   </form>
-// );
 const Container = styled.div`
   position: fixed;
   top: 25%;

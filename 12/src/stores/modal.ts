@@ -22,6 +22,8 @@ const baseZIndex = 1000;
 interface Action {
   open: (component: Modal['component'], props?: ModalProps) => void;
   close: (name: Modal['name']) => void;
+  moveToTop: (name: Modal['name']) => void;
+  closeAll: () => void;
 }
 
 const useModalStore = create<State & Action>()(
@@ -48,6 +50,19 @@ const useModalStore = create<State & Action>()(
           return state;
         }),
       close: name => set(state => ({ modals: state.modals.filter(modal => modal.name !== name) })),
+      moveToTop: name =>
+        set(state => {
+          const targetModal = state.modals.find(modal => modal.name === name);
+          if (!targetModal) return state;
+          return {
+            modals: [
+              ...state.modals.filter(modal => modal.name !== targetModal.name),
+              { ...targetModal, zIndex: state.lastZIndex + 1 },
+            ],
+            lastZIndex: state.lastZIndex + 1,
+          };
+        }),
+      closeAll: () => set({ modals: [], lastZIndex: baseZIndex }),
     }),
     'modal-store',
   ),
