@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/types/api/product';
 import {
   getCoreRowModel,
   useReactTable,
@@ -16,28 +17,49 @@ declare module '@tanstack/react-table' {
   }
 }
 
-interface ReactTableProps<T extends object> {
+interface ReactTableProps<T extends object & { id: string }> {
   data: T[];
   columns: ColumnDef<T>[];
   updateData: (rowIndex: number, columnId: string, value: string) => void;
+  pagination: PaginationParams;
+  setPagination: React.Dispatch<React.SetStateAction<PaginationParams>>;
+  totalPage: number;
 }
 
-function TanstackTable<T extends object>({ data, columns, updateData }: ReactTableProps<T>) {
-  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+function TanstackTable<T extends object & { id: string }>({
+  data,
+  columns,
+  updateData,
+  pagination,
+  setPagination,
+  totalPage,
+}: ReactTableProps<T>) {
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState('');
 
   const table = useReactTable({
     data,
     columns,
+    state: {
+      rowSelection,
+      pagination,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: totalPage,
+    onPaginationChange: data => {
+      setPagination(data);
+      setRowSelection({});
+    },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    autoResetPageIndex,
     meta: {
       updateData: (rowIndex, columnId, value) => {
-        skipAutoResetPageIndex();
         updateData(rowIndex, columnId, value as string);
       },
     },
+    getRowId: originalRow => originalRow.id,
     debugTable: true,
   });
   return (
@@ -126,21 +148,6 @@ function TanstackTable<T extends object>({ data, columns, updateData }: ReactTab
       <div>{table.getRowModel().rows.length} Rows</div>
     </div>
   );
-}
-
-function useSkipper() {
-  const shouldSkipRef = useRef(true);
-  const shouldSkip = shouldSkipRef.current;
-
-  const skip = useCallback(() => {
-    shouldSkipRef.current = false;
-  }, []);
-
-  useEffect(() => {
-    shouldSkipRef.current = true;
-  });
-
-  return [shouldSkip, skip] as const;
 }
 
 export default TanstackTable;

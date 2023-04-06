@@ -1,6 +1,6 @@
-import { getProductDetail } from '@/hooks/apis/products/fetchers';
-import { productKeys } from '@/hooks/apis/products/queryKeys';
-import { useGetProductDetail } from '@/hooks/apis/products/querys';
+import { getProductDetail } from '@/apis/product';
+import { productKeys } from '@/hooks/query/products/queryKeys';
+import { useGetProductDetail } from '@/hooks/query/products/querys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';

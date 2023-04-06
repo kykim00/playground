@@ -5,17 +5,39 @@ import { Product } from '../pages/api/table';
 import { downloadExcel } from 'react-export-table-to-excel';
 import TanstackTable from '@/components/TanstackTable';
 import useTable from '@/hooks/useTable';
-import { useGetProducts } from '@/hooks/apis/products/querys';
+import { useGetProducts } from '@/hooks/query/products/querys';
 
 export default function TablePage() {
-  const { data = [{} as Product] } = useGetProducts();
+  const [{ pageIndex, pageSize }, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const fetchOption = {
+    pageIndex,
+    pageSize,
+  };
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize],
+  );
 
+  const { data } = useGetProducts(fetchOption);
+  const tableData = data?.products ?? [{} as Product];
   const showInputCond = {
     columns: ['description'],
     rows: ['8', '9'],
   };
   const hideColumns = ['thumbnail', 'images'];
-  const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable(data, showInputCond, hideColumns);
+  const withCheckbox = true;
+  const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable({
+    data: tableData,
+    showInputCond,
+    hideColumns,
+    withCheckbox,
+  });
 
   const [exportButtonDisabled, setExportButtonDisabled] = React.useState(false);
 
@@ -44,6 +66,7 @@ export default function TablePage() {
     }, 1000);
   };
 
+  const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
   return (
     <>
       <CSVLink
@@ -64,7 +87,14 @@ export default function TablePage() {
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
-      <TanstackTable<Product> columns={columns} data={rows} updateData={updateCpyData} />
+      <TanstackTable<Product>
+        columns={columns}
+        data={rows}
+        updateData={updateCpyData}
+        pagination={pagination}
+        setPagination={setPagination}
+        totalPage={totalSize}
+      />
     </>
   );
 }

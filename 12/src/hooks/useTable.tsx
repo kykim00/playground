@@ -1,15 +1,23 @@
+import IndeterminateCheckbox from '@/components/ui/table/TableCheckbox';
 import { ColumnDef } from '@tanstack/react-table';
+import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface ShowInputCondType {
   columns?: string[];
   rows?: string[];
 }
 
-function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType, hideColumns?: string[]) {
+interface useTableProps<T extends object> {
+  data: T[];
+  showInputCond?: ShowInputCondType;
+  hideColumns?: string[];
+  withCheckbox?: boolean;
+}
+function useTable<T extends object>({ data, showInputCond, hideColumns, withCheckbox }: useTableProps<T>) {
   const keysOfData = Object.keys(data[0]).filter(key => !hideColumns?.includes(key));
-  const [cpyData, setCpyData] = React.useState(data);
+  const [cpyData, setCpyData] = React.useState<T[]>([]);
   const tableRef = React.useRef();
   const headers = React.useMemo(() => keysOfData.map(key => Object.assign({ label: startCase(key), key })), [data]);
   const rows = React.useMemo(() => data, [data]);
@@ -24,7 +32,7 @@ function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType
             const [value, setValue] = React.useState(initialValue);
 
             const onBlur = () => {
-              table.options.meta?.updateData(row.index, column.id, value);
+              updateCpyData(row.index, column.id, value as string);
             };
 
             React.useEffect(() => {
@@ -42,6 +50,32 @@ function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType
       ),
     [data],
   );
+  if (withCheckbox) {
+    columns.unshift({
+      id: 'select',
+      header: ({ table }) => (
+        <IndeterminateCheckbox
+          {...{
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler(),
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="px-1">
+          <IndeterminateCheckbox
+            {...{
+              checked: row.getIsSelected(),
+              disabled: !row.getCanSelect(),
+              indeterminate: row.getIsSomeSelected(),
+              onChange: row.getToggleSelectedHandler(),
+            }}
+          />
+        </div>
+      ),
+    });
+  }
   const updateCpyData = (rowIndex: number, columnId: string, value: string) => {
     const updatedCpyData = cpyData.map((row, index) => {
       if (index === rowIndex) {
@@ -55,6 +89,11 @@ function useTable<T extends object>(data: T[], showInputCond?: ShowInputCondType
     setCpyData(updatedCpyData);
   };
 
+  useEffect(() => {
+    if (!isEmpty(data) && !isEmpty(data[0])) {
+      setCpyData(data);
+    }
+  }, [data]);
   return { tableRef, cpyData, updateCpyData, columns, rows, headers };
 }
 
