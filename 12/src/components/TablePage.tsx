@@ -53,7 +53,7 @@ export default function TablePage() {
     const body = cpyData.map(data => Object.values(data).map(value => value.toString()));
 
     downloadExcel({
-      fileName: 'data.xlsx',
+      fileName: 'data.xls',
       sheet: 'sheet1',
       tablePayload: {
         header,
