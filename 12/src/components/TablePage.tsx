@@ -6,16 +6,14 @@ import { downloadExcel } from 'react-export-table-to-excel';
 import TanstackTable from '@/components/TanstackTable';
 import useTable from '@/hooks/useTable';
 import { useGetProducts } from '@/hooks/query/products/querys';
+import { useGetMockData } from '@/hooks/query/mocks/querys';
+import { Person } from '@/utils/fetchData';
 
 export default function TablePage() {
   const [{ pageIndex, pageSize }, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
   });
-  const fetchOption = {
-    pageIndex,
-    pageSize,
-  };
   const pagination = React.useMemo(
     () => ({
       pageIndex,
@@ -24,11 +22,12 @@ export default function TablePage() {
     [pageIndex, pageSize],
   );
 
-  const { data } = useGetProducts(fetchOption);
-  const tableData = data?.products ?? [{} as Product];
+  const { data } = useGetMockData(pagination);
+  const tableData = data?.rows ?? [{} as Person];
   const showInputCond = {
-    columns: ['description'],
+    columns: ['status'],
     rows: ['8', '9'],
+    cond: (value: unknown) => value !== '완료',
   };
   const hideColumns = ['thumbnail', 'images'];
   const withCheckbox = true;
@@ -66,7 +65,8 @@ export default function TablePage() {
     }, 1000);
   };
 
-  const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
+  const totalSize = data?.pageCount;
+  // const totalSize = data ? Math.ceil(data.pageCount / pageSize) : -1;
   return (
     <>
       <CSVLink
@@ -87,7 +87,7 @@ export default function TablePage() {
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
-      <TanstackTable<Product>
+      <TanstackTable<Person>
         columns={columns}
         data={rows}
         updateData={updateCpyData}

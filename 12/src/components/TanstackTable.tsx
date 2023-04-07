@@ -10,6 +10,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import React from 'react';
+import styled from '@emotion/styled';
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -64,14 +65,14 @@ function TanstackTable<T extends object & { id: string }>({
   });
   return (
     <div className="flex flex-col">
-      <table className="min-w-full text-center">
+      <Table className="min-w-full text-center">
         <thead className="border-b bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <th key={header.id} className="px-6 py-4 text-sm font-medium text-gray-900">
+                <TableHeaderCell key={header.id} className="px-6 py-4 text-sm font-medium text-gray-900">
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
+                </TableHeaderCell>
               ))}
             </tr>
           ))}
@@ -80,14 +81,14 @@ function TanstackTable<T extends object & { id: string }>({
           {table.getRowModel().rows.map(row => (
             <tr key={row.id} className='border-b" bg-white'>
               {row.getVisibleCells().map(cell => (
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900" key={cell.id}>
+                <TableCell className="whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900" key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
       <div className="h-2" />
       <div className="flex items-center gap-2">
         <button
@@ -150,4 +151,21 @@ function TanstackTable<T extends object & { id: string }>({
   );
 }
 
+const Table = styled.table`
+  min-width: 100%;
+  text-align: center;
+`;
+const TableHeaderCell = styled.th`
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+const TableCell = styled.td`
+  white-space: nowrap;
+  padding: 8px 12px;
+  font-size: 12px;
+  input[type='checkbox'] {
+    margin-top: 2px;
+  }
+`;
 export default TanstackTable;

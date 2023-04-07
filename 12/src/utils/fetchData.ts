@@ -18,14 +18,15 @@ const range = (len: number) => {
   return arr;
 };
 
-const newPerson = (): Person => {
+const newPerson = (): any => {
   return {
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    age: faker.datatype.number(40),
-    visits: faker.datatype.number(1000),
-    progress: faker.datatype.number(100),
-    status: faker.helpers.shuffle<Person['status']>(['relationship', 'complicated', 'single'])[0]!,
+    account: faker.finance.account(),
+    date: faker.date.past().toString(),
+    shop: faker.finance.accountName(),
+    amount: faker.finance.amount(),
+    department: faker.commerce.department(),
+    reason: faker.commerce.product(),
+    status: faker.helpers.shuffle(['결재중', '완료', ''])[0]!,
   };
 };
 
@@ -43,7 +44,7 @@ export function makeData(...lens: number[]) {
   return makeDataLevel();
 }
 
-const data = makeData(10000);
+const data = makeData(200);
 
 export async function fetchData(options: { pageIndex: number; pageSize: number }) {
   // Simulate some network latency

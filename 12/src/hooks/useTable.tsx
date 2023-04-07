@@ -1,4 +1,5 @@
 import IndeterminateCheckbox from '@/components/ui/table/TableCheckbox';
+import { translate } from '@/utils/translate';
 import { ColumnDef } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
@@ -7,6 +8,7 @@ import React, { useEffect } from 'react';
 interface ShowInputCondType {
   columns?: string[];
   rows?: string[];
+  cond?: (value: unknown) => boolean;
 }
 
 interface useTableProps<T extends object> {
@@ -26,7 +28,7 @@ function useTable<T extends object>({ data, showInputCond, hideColumns, withChec
       keysOfData.map(key =>
         Object.assign({
           accessorKey: key,
-          header: startCase(key),
+          header: translate(key),
           cell: ({ getValue, row, column, table, renderValue }) => {
             const initialValue = getValue();
             const [value, setValue] = React.useState(initialValue);
@@ -39,8 +41,9 @@ function useTable<T extends object>({ data, showInputCond, hideColumns, withChec
               setValue(initialValue);
             }, [initialValue]);
 
-            const shoInput = shouldShowInput(row.id, column.id, showInputCond);
-            return shoInput ? (
+            const showInput = shouldShowInput(row.id.toString(), column.id, getValue(), showInputCond);
+
+            return showInput ? (
               <input value={value as string} onChange={e => setValue(e.target.value)} onBlur={onBlur} />
             ) : (
               renderValue()
@@ -97,12 +100,16 @@ function useTable<T extends object>({ data, showInputCond, hideColumns, withChec
   return { tableRef, cpyData, updateCpyData, columns, rows, headers };
 }
 
-function shouldShowInput(rowId: string, columnId: string, showInputCond?: ShowInputCondType): boolean {
+function shouldShowInput(rowId: string, columnId: string, value: unknown, showInputCond?: ShowInputCondType): boolean {
   if (!showInputCond) {
     return false;
   }
-  const { columns = [], rows = [] } = showInputCond;
-  return (rows.length === 0 || rows.includes(rowId)) && (columns.length === 0 || columns.includes(columnId));
+
+  const { columns = [], rows = [], cond = (value: unknown) => true } = showInputCond;
+
+  return (
+    (rows.length === 0 || rows.includes(rowId)) && cond(value) && (columns.length === 0 || columns.includes(columnId))
+  );
 }
 
 export default useTable;
