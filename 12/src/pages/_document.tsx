@@ -7,6 +7,7 @@ export default function Document() {
       <body>
         <Main />
         <div id="modal-root"></div>
+        <div id="search-button" style={{ position: 'fixed', right: '20px', bottom: '20px' }}></div>
         <NextScript />
       </body>
     </Html>

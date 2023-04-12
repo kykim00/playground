@@ -105,7 +105,7 @@ function shouldShowInput(rowId: string, columnId: string, value: unknown, showIn
     return false;
   }
 
-  const { columns = [], rows = [], cond = (value: unknown) => true } = showInputCond;
+  const { columns = [], rows = [], cond = _ => true } = showInputCond;
 
   return (
     (rows.length === 0 || rows.includes(rowId)) && cond(value) && (columns.length === 0 || columns.includes(columnId))
