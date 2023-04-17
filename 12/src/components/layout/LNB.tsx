@@ -1,3 +1,7 @@
-const LNB = () => {};
+import Accordion from '../ui/accordion';
 
-export default LNB;
+function Lnb() {
+  return <Accordion />;
+}
+
+export default Lnb;

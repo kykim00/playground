@@ -7,6 +7,7 @@ import { appWithTranslation } from 'next-i18next';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import toast, { Toaster } from 'react-hot-toast';
 import Modals from '@/components/ui/modals';
+import Layout from '@/components/layout/Layout';
 
 const client = new QueryClient({
   defaultOptions: {
@@ -32,7 +33,9 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={client}>
       <ErrorBoundary fallback={<h1>Error occured!</h1>}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
         <Toaster />
         <Modals />
         <ReactQueryDevtools />
