@@ -8,12 +8,17 @@ import useTable from '@/hooks/useTable';
 import { useGetProducts } from '@/hooks/query/products/querys';
 import { useGetMockData } from '@/hooks/query/mocks/querys';
 import { Person } from '@/utils/fetchData';
+import { useRouter } from 'next/router';
+import Pagination from './ui/pagination';
 
 export default function TablePage() {
+  const router = useRouter();
+  const currentPageFromQuery = Number(router.query.page);
   const [{ pageIndex, pageSize }, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
+    pageIndex: currentPageFromQuery,
+    pageSize: 5,
   });
+
   const pagination = React.useMemo(
     () => ({
       pageIndex,
@@ -22,8 +27,20 @@ export default function TablePage() {
     [pageIndex, pageSize],
   );
 
-  const { data } = useGetMockData(pagination);
-  const tableData = data?.rows ?? [{} as Person];
+  const { data } = useGetProducts(pagination);
+  // const { data } = useGetMockData(pagination);
+  const setPage = (nextPage: number) => {
+    setPagination({
+      ...pagination,
+      pageIndex: nextPage,
+    });
+    router.push({
+      query: {
+        page: nextPage,
+      },
+    });
+  };
+  const tableData = data?.products ?? [{} as Person];
   const showInputCond = {
     columns: ['status'],
     rows: ['8', '9'],
@@ -65,8 +82,8 @@ export default function TablePage() {
     }, 1000);
   };
 
-  const totalSize = data?.pageCount;
-  // const totalSize = data ? Math.ceil(data.pageCount / pageSize) : -1;
+  // const totalSize = data?.pageCount;
+  const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
   return (
     <>
       <CSVLink
@@ -94,7 +111,9 @@ export default function TablePage() {
         pagination={pagination}
         setPagination={setPagination}
         totalPage={totalSize}
+        setPage={setPage}
       />
+      <Pagination onClickPage={setPage} currentPageProps={currentPageFromQuery} totalPage={totalSize} />
     </>
   );
 }

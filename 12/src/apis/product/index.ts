@@ -5,7 +5,7 @@ import { PaginationParams } from '@/types/api/product';
 
 export const getProductData = async (params: PaginationParams) => {
   const { pageIndex: skip, pageSize: limit } = params;
-  const res = await productAxiosInstance.get(`?limit=${limit}&skip=${skip * limit}`, {
+  const res = await productAxiosInstance.get(`?limit=${limit}&skip=${(skip - 1) * limit}`, {
     httpsAgent: new Agent({
       rejectUnauthorized: false,
     }),
