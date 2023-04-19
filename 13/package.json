@@ -21,7 +21,7 @@
     "git-describe": "^4.1.1",
     "html-entities": "^2.3.3",
     "nanoid": "^4.0.0",
-    "next": "13.2.3",
+    "next": "^13.3.0",
     "next-compose-plugins": "^2.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
