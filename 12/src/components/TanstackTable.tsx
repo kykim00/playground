@@ -17,7 +17,6 @@ interface ReactTableProps<T extends object & { id: string }> {
 
 function TanstackTable<T extends object & { id: string }>({ data, columns, updateData }: ReactTableProps<T>) {
   const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState('');
 
   const table = useReactTable({
     data,

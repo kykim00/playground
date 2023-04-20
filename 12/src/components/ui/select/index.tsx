@@ -1,8 +1,13 @@
 import { Listbox } from '@headlessui/react';
 import { useState } from 'react';
 
-const people = [
-  { id: 1, name: 'Durward Reynolds', unavailable: false },
+export const people = [
+  {
+    id: 1,
+    name: 'Durward ReynoldsdsdafasDurward ReynoldsdsdafasDurward ReynoldsdsdafasDurward Reynoldsdsdafas',
+    unavailable: false,
+    divideNextLine: true,
+  },
   { id: 2, name: 'Kenton Towne', unavailable: false },
   { id: 3, name: 'Therese Wunsch', unavailable: false },
   { id: 4, name: 'Benedict Kessler', unavailable: true },
@@ -30,7 +35,9 @@ export const Select = () => {
       <div></div>
       <select value={selectedPerson.name} onChange={e => setSelectedPerson(getPerson(e.currentTarget.value))}>
         {people.map(person => (
-          <option value={person.name}>{person.name}</option>
+          <option key={person.id} value={person.name}>
+            {person.name}
+          </option>
         ))}
       </select>
     </>

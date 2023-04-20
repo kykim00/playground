@@ -13,7 +13,7 @@ import Pagination from './ui/pagination';
 
 export default function TablePage() {
   const router = useRouter();
-  const currentPageFromQuery = Number(router.query.page);
+  const currentPageFromQuery = Number(router.query.page ?? 1);
   const [{ pageIndex, pageSize }, setPagination] = React.useState({
     pageIndex: currentPageFromQuery,
     pageSize: 5,
@@ -41,18 +41,27 @@ export default function TablePage() {
     });
   };
   const tableData = data?.products ?? [{} as Person];
-  const showInputCond = {
-    columns: ['status'],
-    rows: ['8', '9'],
-    cond: (value: unknown) => value !== '완료',
-  };
   const hideColumns = ['thumbnail', 'images'];
   const withCheckbox = true;
+  const cellConditions = [
+    {
+      cellType: 'input',
+      column: 'title',
+      rows: ['2', '3'],
+      condition: (value: unknown) => value !== '완료',
+    },
+    {
+      cellType: 'select',
+      column: 'description',
+      rows: ['3, 4'],
+      options: ['삼성', '애플', '엘지'],
+    },
+  ];
   const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable({
     data: tableData,
-    showInputCond,
     hideColumns,
     withCheckbox,
+    cellConditions,
   });
 
   const [exportButtonDisabled, setExportButtonDisabled] = React.useState(false);
@@ -82,8 +91,8 @@ export default function TablePage() {
     }, 1000);
   };
 
-  // const totalSize = data?.pageCount;
   const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
+
   return (
     <>
       <CSVLink
@@ -96,7 +105,7 @@ export default function TablePage() {
             return false;
           }
         }}
-        filename={`목데이터_테이블}`}
+        filename={`목데이터_테이블`}
       >
         CSV 다운로드
       </CSVLink>
@@ -104,7 +113,7 @@ export default function TablePage() {
         {exportButtonDisabled ? '다운로드중...' : 'Export to Excel'}
       </button>
       <ReactToPrint trigger={() => <button>리포트 출력</button>} content={() => tableRef.current!} />
-      <TanstackTable<Person>
+      <TanstackTable<Product>
         columns={columns}
         data={rows}
         updateData={updateCpyData}

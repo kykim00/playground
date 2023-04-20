@@ -1,23 +1,31 @@
+import Select from '@/components/ui/select/select-v2';
 import IndeterminateCheckbox from '@/components/ui/table/TableCheckbox';
 import { translate } from '@/utils/translate';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnDef } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-interface ShowInputCondType {
-  columns?: string[];
+type CellType = 'text' | 'input' | 'select' | 'checkbox';
+
+interface CellCondition {
+  cellType: CellType;
+  column: string;
   rows?: string[];
-  cond?: (value: unknown) => boolean;
+  options?: string[];
+  condition?: (value: unknown) => boolean;
 }
 
 interface useTableProps<T extends object> {
   data: T[];
-  showInputCond?: ShowInputCondType;
   hideColumns?: string[];
   withCheckbox?: boolean;
+  cellConditions?: CellCondition[];
 }
-function useTable<T extends object>({ data, showInputCond, hideColumns, withCheckbox }: useTableProps<T>) {
+function useTable<T extends object>({ data, hideColumns, withCheckbox, cellConditions }: useTableProps<T>) {
   const keysOfData = Object.keys(data[0]).filter(key => !hideColumns?.includes(key));
   const [cpyData, setCpyData] = React.useState<T[]>([]);
   const tableRef = React.useRef();
@@ -31,23 +39,51 @@ function useTable<T extends object>({ data, showInputCond, hideColumns, withChec
           header: translate(key),
           cell: ({ getValue, row, column, table, renderValue }) => {
             const initialValue = getValue();
-            const [value, setValue] = React.useState(initialValue);
-
+            const schema = z.object({
+              [column.id]: z.string().min(1, { message: `${column.id}를 입력해주세요.` }),
+            });
+            const { register, handleSubmit } = useForm({
+              defaultValues: {
+                [`${column.id}.${row.id}`]: initialValue as string,
+              },
+              resolver: zodResolver(schema),
+            });
+            const [selectedOptionValue, setSelectedOptionValue] = useState('');
             const onBlur = () => {
-              updateCpyData(row.index, column.id, value as string);
+              handleSubmit(
+                data => console.log('data', data),
+                error => console.log('errpr', error),
+              )();
+              // updateCpyData(row.index, column.id, value as string);
             };
 
-            React.useEffect(() => {
-              setValue(initialValue);
-            }, [initialValue]);
+            const handleChangeOption = (value: any) => {
+              setSelectedOptionValue(value);
+              updateCpyData(row.index, column.id, value.name);
+            };
 
-            const showInput = shouldShowInput(row.id.toString(), column.id, getValue(), showInputCond);
+            const cellCondition = getCellCondition(row.id.toString(), column.id);
 
-            return showInput ? (
-              <input value={value as string} onChange={e => setValue(e.target.value)} onBlur={onBlur} />
-            ) : (
-              renderValue()
-            );
+            if (cellCondition) {
+              console.log('true');
+            }
+            if (cellCondition && cellCondition.cellType === 'select') {
+              console.log('select');
+
+              return (
+                <Select
+                  label="계정과목선택"
+                  placeholder="선택"
+                  value={selectedOptionValue}
+                  onChange={handleChangeOption}
+                  options={cellCondition.options!}
+                />
+              );
+            } else if (cellCondition && cellCondition.cellType === 'input' && cellCondition.condition?.(initialValue)) {
+              return <input {...register(`${column.id}.${row.id}`)} onBlur={onBlur} />;
+            } else {
+              return renderValue();
+            }
           },
         } as ColumnDef<T>),
       ),
@@ -92,24 +128,22 @@ function useTable<T extends object>({ data, showInputCond, hideColumns, withChec
     setCpyData(updatedCpyData);
   };
 
+  const getCellCondition = (rowId: string, columnId: string): CellCondition<T> | undefined => {
+    return cellConditions?.find(condition => {
+      console.log(condition);
+
+      const matchColumn = condition.column === columnId;
+      const matchRow = !condition.rows || condition.rows.includes(rowId);
+      return matchColumn && matchRow;
+    });
+  };
+
   useEffect(() => {
     if (!isEmpty(data) && !isEmpty(data[0])) {
       setCpyData(data);
     }
   }, [data]);
   return { tableRef, cpyData, updateCpyData, columns, rows, headers };
-}
-
-function shouldShowInput(rowId: string, columnId: string, value: unknown, showInputCond?: ShowInputCondType): boolean {
-  if (!showInputCond) {
-    return false;
-  }
-
-  const { columns = [], rows = [], cond = _ => true } = showInputCond;
-
-  return (
-    (rows.length === 0 || rows.includes(rowId)) && cond(value) && (columns.length === 0 || columns.includes(columnId))
-  );
 }
 
 export default useTable;

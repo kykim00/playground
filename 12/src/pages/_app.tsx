@@ -8,6 +8,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import toast, { Toaster } from 'react-hot-toast';
 import Modals from '@/components/ui/modals';
 import Layout from '@/components/layout/Layout';
+import { ThemeProvider } from '@emotion/react';
+import themePalette from '@/styles/theme';
 
 const client = new QueryClient({
   defaultOptions: {
@@ -31,16 +33,18 @@ const client = new QueryClient({
 });
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <QueryClientProvider client={client}>
-      <ErrorBoundary fallback={<h1>Error occured!</h1>}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-        <Toaster />
-        <Modals />
-        <ReactQueryDevtools />
-      </ErrorBoundary>
-    </QueryClientProvider>
+    <ThemeProvider theme={themePalette.light}>
+      <QueryClientProvider client={client}>
+        <ErrorBoundary fallback={<h1>Error occured!</h1>}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+          <Toaster />
+          <Modals />
+          <ReactQueryDevtools />
+        </ErrorBoundary>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 export default appWithTranslation(App);

@@ -4,26 +4,25 @@ interface PageParams {
   params: {};
 }
 
-function delay(ms: number) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      resolve(console.log(`${ms}ms delay`));
-    }, ms);
-  });
-}
-async function getData() {
-  const data = await fetch('http://localhost:3001/api/hello');
-  await delay(2000);
-  return data.json();
-}
+// function delay(ms: number) {
+//   return new Promise(function (resolve, reject) {
+//     setTimeout(function () {
+//       resolve(console.log(`${ms}ms delay`));
+//     }, ms);
+//   });
+// }
+// async function getData() {
+//   const data = await fetch('http://localhost:3001/api/hello');
+//   await delay(2000);
+//   return data.json();
+// }
 const Page = async ({ params }: PageParams) => {
-  const data = await getData();
+  // const data = await getData();
 
   return (
     <>
       <h1>New Page</h1>
-      {/* Suspense not working */}
-      <Suspense fallback={<div>loading...</div>}>
+      {/* <Suspense fallback={<div>loading...</div>}>
         {data.map((person: any) => {
           const { name, phone, email, list, country, region } = person;
           return (
@@ -46,7 +45,7 @@ const Page = async ({ params }: PageParams) => {
             </ul>
           );
         })}
-      </Suspense>
+      </Suspense> */}
     </>
   );
 };
