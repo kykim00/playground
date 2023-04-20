@@ -2,18 +2,10 @@ import ChevronDown from '@/components/icons/ChevronDown';
 import ChevronUp from '@/components/icons/ChevronUp';
 import Setting from '@/components/icons/Setting';
 import useNavigationStore, { useCurrentName } from '@/stores/navigation';
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { PropsWithChildren, useId, useState } from 'react';
-
-type Prop = {
-  Head: React.ReactNode;
-  Buttons?: React.ReactNode;
-  Content: React.ReactNode;
-  isOpen?: boolean;
-  onHeadClick?: () => void;
-} & PropsWithChildren;
+import { useId, useState } from 'react';
 
 interface Menu {
   name: string;
@@ -101,24 +93,33 @@ const LNBRoutes2: (HeadMenu | Menu)[] = [
     to: '/',
   },
 ];
+
 const Accordion = () => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const onToggleCollapsed = () => {
+    setCollapsed(prev => !prev);
+  };
   return (
-    <Container className="no-select">
-      <ul>
-        {LNBRoutes.map(route => {
-          if ('menus' in route) {
-            return <AccordionList {...route} />;
-          }
-          return <AccordionItem {...route} isFirstDepthMenu />;
-        })}
-        <hr />
-        {LNBRoutes2.map(route => {
-          if ('menus' in route) {
-            return <AccordionList {...route} />;
-          }
-          return <AccordionItem {...route} isFirstDepthMenu />;
-        })}
-      </ul>
+    <Container className="no-select" collapsed={collapsed}>
+      {!collapsed && (
+        <ul>
+          {LNBRoutes.map(route => {
+            if ('menus' in route) {
+              return <AccordionList {...route} />;
+            }
+            return <AccordionItem {...route} isFirstDepthMenu />;
+          })}
+          <hr />
+          {LNBRoutes2.map(route => {
+            if ('menus' in route) {
+              return <AccordionList {...route} />;
+            }
+            return <AccordionItem {...route} isFirstDepthMenu />;
+          })}
+        </ul>
+      )}
+      <CollapseLNB onClick={onToggleCollapsed}>{`${collapsed ? '>' : '<'}`}</CollapseLNB>
     </Container>
   );
 };
@@ -159,9 +160,7 @@ function AccordionItem({ name, icon, to, isFirstDepthMenu = false }: Menu & { is
   return (
     <Link href={to}>
       <AccordionListItem
-        onClick={() => {
-          open(name, to);
-        }}
+        onClick={() => open(name, to)}
         isActive={currentName === name}
         isFirstDepthMenu={isFirstDepthMenu}
       >
@@ -174,15 +173,33 @@ function AccordionItem({ name, icon, to, isFirstDepthMenu = false }: Menu & { is
   );
 }
 
-const Container = styled.aside`
-  width: 250px;
+const Container = styled.aside<{ collapsed: boolean }>`
+  position: relative;
+  width: ${({ collapsed }) => (collapsed ? '50px' : '250px')};
   background-color: #eff4fc;
   color: #676767;
   font-size: 15px;
   padding: 20px;
+  transition: 0.2s all ease-in-out;
   ul,
   li {
     list-style: none;
+  }
+  ${({ collapsed }) =>
+    !collapsed &&
+    css`
+      ul {
+        animation: ${appear} 0.6s;
+      }
+    `}
+`;
+
+const appear = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 `;
 
@@ -225,6 +242,19 @@ const IconTextWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`;
+
+const CollapseLNB = styled.div`
+  position: absolute;
+  right: 0;
+  top: calc(50% - 60px);
+  transform: translateY(-50%);
+  width: 20px;
+  height: 150px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export default Accordion;
