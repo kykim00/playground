@@ -1,12 +1,18 @@
 import styled from '@emotion/styled';
+import dynamic from 'next/dynamic';
 import { PropsWithChildren } from 'react';
 import Lnb from './LNB';
+
+const NavigationTab = dynamic(() => import('../ui/navigationTab'), { ssr: false });
 
 export default function ({ children }: PropsWithChildren) {
   return (
     <Container>
       <Lnb />
-      <PageWrap>{children}</PageWrap>
+      <PageWrap>
+        <NavigationTab />
+        {children}
+      </PageWrap>
     </Container>
   );
 }

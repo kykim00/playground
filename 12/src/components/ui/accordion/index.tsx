@@ -1,6 +1,7 @@
 import ChevronDown from '@/components/icons/ChevronDown';
 import ChevronUp from '@/components/icons/ChevronUp';
 import Setting from '@/components/icons/Setting';
+import useNavigationStore, { useCurrentName } from '@/stores/navigation';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
@@ -31,15 +32,15 @@ const LNBRoutes: (HeadMenu | Menu)[] = [
     menus: [
       {
         name: '법인카드',
-        to: '/',
+        to: '/table',
       },
       {
         name: '개인경비',
-        to: '/',
+        to: '/ui',
       },
       {
         name: '예산편성',
-        to: '/예산사용',
+        to: '/',
       },
     ],
   },
@@ -61,39 +62,68 @@ const LNBRoutes: (HeadMenu | Menu)[] = [
     to: '/',
   },
 ];
+
+const LNBRoutes2: (HeadMenu | Menu)[] = [
+  {
+    name: '경비지출관리2',
+    // icon: ChevronDown,
+    // activeIcon: ChevronUp,
+    menus: [
+      {
+        name: '법인카드2',
+        to: '/table',
+      },
+      {
+        name: '개인경비2',
+        to: '/ui',
+      },
+      {
+        name: '예산편성2',
+        to: '/',
+      },
+    ],
+  },
+  {
+    name: '매출입 관리2',
+    menus: [
+      {
+        name: '매출2',
+        to: '/',
+      },
+      {
+        name: '매입2',
+        to: '/',
+      },
+    ],
+  },
+  {
+    name: '입출금 관리2',
+    to: '/',
+  },
+];
 const Accordion = () => {
-  const [activeMenu, setActiveMenu] = useState('');
-  const handleClickMenu = (name: string) => {
-    setActiveMenu(name);
-  };
   return (
     <Container className="no-select">
       <ul>
         {LNBRoutes.map(route => {
           if ('menus' in route) {
-            return <AccordionList {...route} activeMenu={activeMenu} handleClickMenu={handleClickMenu} />;
+            return <AccordionList {...route} />;
           }
-          return (
-            <AccordionItem
-              {...route}
-              isActive={activeMenu === route.name}
-              handleClickMenu={handleClickMenu}
-              isHeadMenu
-            />
-          );
+          return <AccordionItem {...route} isFirstDepthMenu />;
+        })}
+        <hr />
+        {LNBRoutes2.map(route => {
+          if ('menus' in route) {
+            return <AccordionList {...route} />;
+          }
+          return <AccordionItem {...route} isFirstDepthMenu />;
         })}
       </ul>
     </Container>
   );
 };
 
-export function AccordionList({
-  name,
-  icon,
-  menus,
-  activeMenu,
-  handleClickMenu,
-}: HeadMenu & { activeMenu: string; handleClickMenu: (name: string) => void }) {
+function AccordionList({ name, icon, menus }: HeadMenu) {
   const [isOpen, setIsOpen] = useState(true);
   const id = useId();
   const Icon = icon ?? ChevronUp;
@@ -113,15 +143,7 @@ export function AccordionList({
       {isOpen && (
         <ul>
           {menus.map(menu => {
-            const isActive = activeMenu === menu.name;
-            return (
-              <AccordionItem
-                {...menu}
-                isActive={isActive}
-                key={`${id}_${menu.name}`}
-                handleClickMenu={handleClickMenu}
-              />
-            );
+            return <AccordionItem {...menu} key={`${id}_${menu.name}`} />;
           })}
         </ul>
       )}
@@ -129,24 +151,26 @@ export function AccordionList({
   );
 }
 
-export function AccordionItem({
-  name,
-  icon,
-  to,
-  isActive,
-  handleClickMenu,
-  isHeadMenu = false,
-}: Menu & { isActive: boolean; handleClickMenu: (name: string) => void; isHeadMenu?: boolean }) {
+function AccordionItem({ name, icon, to, isFirstDepthMenu = false }: Menu & { isFirstDepthMenu?: boolean }) {
   const Icon = icon ?? Setting;
+  const currentName = useCurrentName();
+  const open = useNavigationStore(state => state.open);
+
   return (
-    <AccordionListItem onClick={() => handleClickMenu(name)} isActive={isActive} isHeadMenu={isHeadMenu}>
-      {/* <Link href={to}>
-      </Link> */}
-      <IconTextWrap>
-        <Icon />
-        <span>{name}</span>
-      </IconTextWrap>
-    </AccordionListItem>
+    <Link href={to}>
+      <AccordionListItem
+        onClick={() => {
+          open(name, to);
+        }}
+        isActive={currentName === name}
+        isFirstDepthMenu={isFirstDepthMenu}
+      >
+        <IconTextWrap>
+          <Icon />
+          <span>{name}</span>
+        </IconTextWrap>
+      </AccordionListItem>
+    </Link>
   );
 }
 
@@ -176,8 +200,9 @@ const AccordionListTitle = styled.div<{ isOpen?: boolean }>`
   }
 `;
 
-const AccordionListItem = styled.li<{ isActive?: boolean; isHeadMenu?: boolean }>`
-  padding: ${({ isHeadMenu }) => (isHeadMenu ? '8px 10px 8px 4px' : '8px 10px 8px 20px')};
+const AccordionListItem = styled.li<{ isActive?: boolean; isFirstDepthMenu?: boolean }>`
+  box-sizing: border-box;
+  padding: ${({ isFirstDepthMenu }) => (isFirstDepthMenu ? '8px 10px 8px 4px' : '8px 10px 8px 20px')};
   &:hover {
     background-color: white;
   }
