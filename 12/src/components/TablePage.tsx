@@ -49,7 +49,11 @@ export default function TablePage() {
       cellType: 'select',
       column: 'description',
       rows: ['3', '4'],
-      options: ['삼성', '애플', '엘지'],
+      options: [
+        { id: '삼성', name: '삼성', label: '상성' },
+        { id: '삼ㅇ성', name: '삼ㄹㄴㅇ성', label: '상성' },
+        { id: '삼ㄹㅁㅇㄴ성', name: '삼ㄹㅇㄴ성', label: '상성' },
+      ],
       isMultiple: true,
     },
   ];

@@ -1,5 +1,6 @@
 import Select, { OptionValue } from '@/components/ui/select/select-v2';
 import IndeterminateCheckbox from '@/components/ui/table/TableCheckbox';
+import Tooltip from '@/components/ui/tooltip';
 import useTableTooltipStore, { useTableTooltips } from '@/stores/tableTooltip';
 import { translate } from '@/utils/translate';
 import { ColumnDef } from '@tanstack/react-table';
@@ -44,10 +45,17 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
             const cellCondition = getCellCondition(row.id.toString(), column.id);
 
             if (cellCondition && cellCondition.cellType === 'select') {
+              const targetName = `${column.id}-${row.id}`;
               const [selectedOptionValue, setSelectedOptionValue] = useState('');
+              const [tableTooltips, remove] = useTableTooltipStore(state => [state.tableTooltips, state.remove]);
+              const showTooltip = tableTooltips.includes(targetName);
+
               const handleChangeOption = (value: string) => {
                 setSelectedOptionValue(value);
                 updateCpyData(row.index, column.id, value);
+                if (showTooltip) {
+                  remove(targetName);
+                }
               };
 
               const handleMultipleChangeOption = (value: OptionValue[]) => {
@@ -57,15 +65,18 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
               };
 
               return (
-                <Select
-                  label="계정과목선택"
-                  placeholder="선택"
-                  value={selectedOptionValue}
-                  onChange={handleChangeOption}
-                  onMultipleChange={handleMultipleChangeOption}
-                  options={cellCondition.options!}
-                  // isMultiple={!!cellCondition.isMultiple}
-                />
+                <>
+                  <Select
+                    label="계정과목선택"
+                    placeholder="선택"
+                    value={selectedOptionValue}
+                    onChange={handleChangeOption}
+                    onMultipleChange={handleMultipleChangeOption}
+                    options={cellCondition.options!}
+                    isMultiple={!!cellCondition.isMultiple}
+                  />
+                  {showTooltip && <div>{translate(column.id)}를 선택하세요</div>}
+                </>
               );
             } else if (cellCondition && cellCondition.cellType === 'input' && cellCondition.condition?.(initialValue)) {
               const targetName = `${column.id}-${row.id}`;
@@ -90,10 +101,10 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
               };
 
               return (
-                <>
+                <div style={{ position: 'relative' }}>
                   <input {...register(`${column.id}-${row.id}`)} onBlur={onBlur} />
-                  {showTooltip && <div>{translate(column.id)}를 입력하세요</div>}
-                </>
+                  {<Tooltip>{translate(column.id)}를 입력하세요</Tooltip>}
+                </div>
               );
             } else {
               return renderValue();

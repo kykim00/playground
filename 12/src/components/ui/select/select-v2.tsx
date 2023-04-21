@@ -9,6 +9,7 @@ export interface OptionValue {
   id: number | string;
   /** 각 옵션 항목의 이름(보여지는 값) */
   name: string;
+  label?: string;
   /** 각 옵션 항목의 비활성 여부 */
   disabled?: boolean;
   /** 다음 항목에 구분선 추가 여부 */
