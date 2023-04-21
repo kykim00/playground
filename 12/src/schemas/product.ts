@@ -20,3 +20,6 @@ export const productsSchema = z.object({
   skip: z.number(),
   limit: z.number(),
 });
+
+export type Product = z.infer<typeof productSchema>;
+export type Products = z.infer<typeof productsSchema>;

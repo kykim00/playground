@@ -33,8 +33,6 @@ const Pagination = ({
   const [currentPage, setCurrentPage] = useState(currentPageProps);
   const [isShowFirstPage, setIsShowFirstPage] = useState(isShowFirstPageProps);
 
-  console.log(pageIndex);
-
   // const totalPage = useMemo(() => {
   //   if (isShowFirstPage) {
   //     return total ? Math.ceil(total / limit) : 1;

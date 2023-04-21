@@ -9,13 +9,13 @@ declare module '@tanstack/react-table' {
   }
 }
 
-interface ReactTableProps<T extends object & { id: string }> {
+interface ReactTableProps<T extends object & { id: string | number }> {
   data: T[];
   columns: ColumnDef<T>[];
   updateData: (rowIndex: number, columnId: string, value: string) => void;
 }
 
-function TanstackTable<T extends object & { id: string }>({ data, columns, updateData }: ReactTableProps<T>) {
+function TanstackTable<T extends object & { id: string | number }>({ data, columns, updateData }: ReactTableProps<T>) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -34,7 +34,7 @@ function TanstackTable<T extends object & { id: string }>({ data, columns, updat
         updateData(rowIndex, columnId, value as string);
       },
     },
-    getRowId: originalRow => originalRow.id,
+    getRowId: originalRow => originalRow.id.toString(),
     debugTable: true,
   });
   return (

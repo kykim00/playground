@@ -25,11 +25,11 @@ export interface SelectProps {
   /** 스크린 리더가 읽어주는 라벨 텍스트 */
   label: string;
   /** 옵션 리스트 */
-  options: OptionValue[];
+  options: OptionValue[] | string[];
   /** 선택된 값 (최초 실행시 초기값) */
-  value?: OptionValue | OptionValue[];
+  value?: OptionValue | OptionValue[] | string;
   /** 옵션 선택 처리 핸들러 (isMultiple이 false일때 전용 핸들러) */
-  onChange?: (value: OptionValue) => void;
+  onChange?: ((value: OptionValue) => void) | ((value: string) => void);
   /** 옵션 선택 처리 핸들러 (isMultiple이 true일때 전용 핸들러) */
   onMultipleChange?: (value: OptionValue[]) => void;
   /** Select 컴포넌트 전체 비활성 여부 */
@@ -58,20 +58,20 @@ const Select = React.forwardRef(
     }: SelectProps,
     ref: ForwardedRef<HTMLButtonElement>,
   ) => {
-    const initialSelected: OptionValue | OptionValue[] = value
-      ? isMultiple
-        ? (value as OptionValue[])
-        : [value as OptionValue]
-      : [{} as OptionValue];
-
     let labelText = '';
+
     if (!value) {
       labelText = placeholder;
-    } else if ('length' in value) {
-      labelText = value.map(v => v.name).join(', ');
+    } else if (typeof value === 'object') {
+      if (Array.isArray(value)) {
+        labelText = value.map(v => v.name).join(', ') || placeholder;
+      } else {
+        labelText = value.name;
+      }
     } else {
-      labelText = value.name;
+      labelText = value;
     }
+
     return (
       <div className={className}>
         <ListBox
@@ -91,31 +91,51 @@ const Select = React.forwardRef(
               <ListOptions>
                 <>
                   {options.map(option => {
-                    option.id !== '' && (
-                      <Fragment key={option.id}>
-                        <Listbox.Option value={option} disabled={option.disabled || false} as={Fragment}>
-                          {({ selected, disabled }) => {
-                            const isSelected = !!initialSelected.find(({ id }) => id === option.id) || selected;
-                            return (
-                              <ListOptionElement selected={isSelected} disabled={disabled}>
-                                {/* {isMultiple && <input type="checkbox" checked={isSelected} />} */}
-                                {(option.iconSrc || option.iconClass) && (
-                                  <span>
-                                    {option.iconSrc ? (
-                                      <img src={option.iconSrc} alt={option.alt} />
-                                    ) : (
-                                      <i className={option.iconClass} />
-                                    )}
-                                  </span>
-                                )}
-                                <div>{option.name}</div>
-                                {isSelected && <i className="far fa-check" />}
-                              </ListOptionElement>
-                            );
-                          }}
-                        </Listbox.Option>
-                        {option.divideNextLine && <DividerElement />}
-                      </Fragment>
+                    if (typeof option === 'string') {
+                      return (
+                        <Fragment key={option}>
+                          <Listbox.Option value={option} as={Fragment}>
+                            {({ selected }) => {
+                              const isSelected = labelText.includes(option) || selected;
+                              return (
+                                <ListOptionElement selected={isSelected}>
+                                  <div>{option}</div>
+                                  {isSelected && <i className="far fa-check" />}
+                                </ListOptionElement>
+                              );
+                            }}
+                          </Listbox.Option>
+                        </Fragment>
+                      );
+                    }
+
+                    return (
+                      option.id !== '' && (
+                        <Fragment key={option.id}>
+                          <Listbox.Option value={option} disabled={option.disabled || false} as={Fragment}>
+                            {({ selected, disabled }) => {
+                              const isSelected = labelText.includes(option.name) || selected;
+                              return (
+                                <ListOptionElement selected={isSelected} disabled={disabled}>
+                                  {isMultiple && <input type="checkbox" checked={isSelected} />}
+                                  {(option.iconSrc || option.iconClass) && (
+                                    <span>
+                                      {option.iconSrc ? (
+                                        <img src={option.iconSrc} alt={option.alt} />
+                                      ) : (
+                                        <i className={option.iconClass} />
+                                      )}
+                                    </span>
+                                  )}
+                                  <div>{option.name}</div>
+                                  {isSelected && <i className="far fa-check" />}
+                                </ListOptionElement>
+                              );
+                            }}
+                          </Listbox.Option>
+                          {option.divideNextLine && <DividerElement />}
+                        </Fragment>
+                      )
                     );
                   })}
 
@@ -194,7 +214,7 @@ const ListOptions = styled(Listbox.Options)`
   box-shadow: 2px 5px 4px #00000029;
 `;
 
-const ListOptionElement = styled.li<{ selected: Boolean; disabled: Boolean }>`
+const ListOptionElement = styled.li<{ selected: Boolean; disabled?: Boolean }>`
   background-color: ${({ selected, theme }) =>
     selected ? theme.basic.gray[30] : theme.semantic.select.background.default};
   display: flex;

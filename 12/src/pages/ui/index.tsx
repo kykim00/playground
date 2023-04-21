@@ -12,7 +12,6 @@ const UIPage = () => {
   const handleChangeMultipleOption = (value: any) => {
     setSelectedValues(value);
   };
-  console.log(selectedValues);
 
   return (
     <>
@@ -20,7 +19,7 @@ const UIPage = () => {
       <SelectV2
         placeholder="선택하세요"
         label="po"
-        // onChange={handleChangeOption}
+        onChange={handleChangeOption}
         isMultiple
         onMultipleChange={handleChangeMultipleOption}
         value={selectedValues}
