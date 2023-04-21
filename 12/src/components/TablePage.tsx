@@ -1,20 +1,21 @@
-import React from 'react';
+import { useState, useMemo } from 'react';
 import TanstackTable from '@/components/TanstackTable';
-import useTable, { CellCondition, CellType } from '@/hooks/useTable';
+import useTable, { CellCondition } from '@/hooks/useTable';
 import { useGetProducts } from '@/hooks/query/products/querys';
 import { useRouter } from 'next/router';
 import Pagination from './ui/pagination';
 import { Product } from '@/schemas/product';
+import useTableTooltipStore from '@/stores/tableTooltip';
 
 export default function TablePage() {
   const router = useRouter();
   const currentPageFromQuery = Number(router.query.page ?? 1);
-  const [{ pageIndex, pageSize }, setPagination] = React.useState({
+  const [{ pageIndex, pageSize }, setPagination] = useState({
     pageIndex: currentPageFromQuery,
     pageSize: 5,
   });
 
-  const pagination = React.useMemo(
+  const pagination = useMemo(
     () => ({
       pageIndex,
       pageSize,
@@ -53,6 +54,8 @@ export default function TablePage() {
     },
   ];
 
+  const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
+
   const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable({
     data: tableData,
     hideColumns,
@@ -60,10 +63,34 @@ export default function TablePage() {
     cellConditions,
   });
 
-  const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
+  const addTableTooltipState = useTableTooltipStore(staet => staet.add);
+  const validateSelectedValues = () => {
+    let allValid = true;
+
+    cpyData.forEach((row, rowIndex) => {
+      cellConditions.forEach(condition => {
+        if (condition.cellType === 'select' || condition.cellType === 'input') {
+          const selectedValue = row[condition.column as keyof typeof row];
+          if (!selectedValue || selectedValue === '') {
+            allValid = false;
+            addTableTooltipState(`${condition.column}-${rowIndex + 1}`);
+          }
+        }
+      });
+    });
+
+    return allValid;
+  };
+
+  const handleButtonClick = () => {
+    if (validateSelectedValues()) {
+      console.log('Form is valid. Submitting...');
+    }
+  };
 
   return (
     <>
+      <button onClick={handleButtonClick}>submit</button>
       <TanstackTable<Product> data={rows} columns={columns} updateData={updateCpyData} />
       <Pagination onClickPage={setPage} currentPageProps={currentPageFromQuery} totalPage={totalSize} />
     </>

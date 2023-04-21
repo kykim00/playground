@@ -34,7 +34,7 @@ function TanstackTable<T extends object & { id: string | number }>({ data, colum
         updateData(rowIndex, columnId, value as string);
       },
     },
-    getRowId: originalRow => originalRow.id.toString(),
+    getRowId: originalRow => originalRow.id as string,
     debugTable: true,
   });
   return (

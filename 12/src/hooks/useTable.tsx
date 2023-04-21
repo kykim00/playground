@@ -1,13 +1,12 @@
 import Select, { OptionValue } from '@/components/ui/select/select-v2';
 import IndeterminateCheckbox from '@/components/ui/table/TableCheckbox';
+import useTableTooltipStore, { useTableTooltips } from '@/stores/tableTooltip';
 import { translate } from '@/utils/translate';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnDef } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 export type CellType = 'text' | 'input' | 'select' | 'checkbox';
 
@@ -33,6 +32,7 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
   const tableRef = React.useRef();
   const headers = React.useMemo(() => keysOfData.map(key => Object.assign({ label: startCase(key), key })), [data]);
   const rows = React.useMemo(() => data, [data]);
+  const removeAll = useTableTooltipStore(state => state.removeAll);
   const columns = React.useMemo<ColumnDef<T>[]>(
     () =>
       keysOfData.map(key =>
@@ -68,25 +68,33 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
                 />
               );
             } else if (cellCondition && cellCondition.cellType === 'input' && cellCondition.condition?.(initialValue)) {
-              const schema = z.object({
-                [`${column.id}-${row.id}`]: z.string().min(1, { message: `${column.id}를 입력해주세요.` }),
-              });
+              const targetName = `${column.id}-${row.id}`;
+              const [tableTooltips, remove] = useTableTooltipStore(state => [state.tableTooltips, state.remove]);
+              const showTooltip = tableTooltips.includes(targetName);
               const { register, handleSubmit } = useForm({
                 defaultValues: {
-                  [`${column.id}-${row.id}`]: initialValue as string,
+                  [targetName]: '' as string,
                 },
-                resolver: zodResolver(schema),
               });
               const onBlur = () => {
                 handleSubmit(
                   data => {
-                    console.log('data', data);
-                    updateCpyData(row.index, column.id, Object.values(data)[0]);
+                    const value = Object.values(data)[0];
+                    updateCpyData(row.index, column.id, value);
+                    if (value && showTooltip) {
+                      remove(targetName);
+                    }
                   },
                   error => console.log('errpr', error),
                 )();
               };
-              return <input {...register(`${column.id}-${row.id}`)} onBlur={onBlur} />;
+
+              return (
+                <>
+                  <input {...register(`${column.id}-${row.id}`)} onBlur={onBlur} />
+                  {showTooltip && <div>{translate(column.id)}를 입력하세요</div>}
+                </>
+              );
             } else {
               return renderValue();
             }
@@ -137,6 +145,7 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
       return updatedCpyData;
     });
   };
+
   const getCellCondition = (rowId: string, columnId: string): CellCondition | undefined => {
     return cellConditions?.find(condition => {
       const matchColumn = condition.column === columnId;
@@ -149,6 +158,7 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
     if (!isEmpty(data) && !isEmpty(data[0])) {
       setCpyData([...data]);
     }
+    return () => removeAll();
   }, [data]);
 
   return { tableRef, cpyData, updateCpyData, columns, rows, headers };
