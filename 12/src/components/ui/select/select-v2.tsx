@@ -118,7 +118,7 @@ const Select = React.forwardRef(
                               const isSelected = labelText.includes(option.name) || selected;
                               return (
                                 <ListOptionElement selected={isSelected} disabled={disabled}>
-                                  {isMultiple && <input type="checkbox" checked={isSelected} />}
+                                  {isMultiple && <input type="checkbox" checked={isSelected} onChange={() => {}} />}
                                   {(option.iconSrc || option.iconClass) && (
                                     <span>
                                       {option.iconSrc ? (

@@ -60,7 +60,7 @@ export default function TablePage() {
 
   const totalSize = data ? Math.ceil(data.total / pageSize) : -1;
 
-  const { tableRef, cpyData, updateCpyData, columns, rows, headers } = useTable({
+  const { tableRef, cpyData, updateCpyData, columns, rows, headers, checkedRows } = useTable({
     data: tableData,
     hideColumns,
     withCheckbox,
@@ -89,6 +89,8 @@ export default function TablePage() {
   const handleButtonClick = () => {
     if (validateSelectedValues()) {
       console.log('Form is valid. Submitting...');
+    } else {
+      console.log(checkedRows);
     }
   };
 

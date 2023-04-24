@@ -7,6 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty';
 import startCase from 'lodash/startCase';
 import React, { useEffect, useState } from 'react';
+import { josa } from '@toss/hangul';
 import { useForm } from 'react-hook-form';
 
 export type CellType = 'text' | 'input' | 'select' | 'checkbox';
@@ -27,12 +28,20 @@ interface useTableProps<T extends object> {
   cellConditions?: CellCondition[];
 }
 
-function useTable<T extends object>({ data, hideColumns, withCheckbox, cellConditions }: useTableProps<T>) {
+function useTable<T extends object & { id: number }>({
+  data,
+  hideColumns,
+  withCheckbox,
+  cellConditions,
+}: useTableProps<T>) {
   const keysOfData = Object.keys(data[0]).filter(key => !hideColumns?.includes(key));
   const [cpyData, setCpyData] = React.useState<T[]>([]);
+  const [checkedRows, setCheckedRows] = React.useState<T[]>([]);
+
   const tableRef = React.useRef();
   const headers = React.useMemo(() => keysOfData.map(key => Object.assign({ label: startCase(key), key })), [data]);
   const rows = React.useMemo(() => data, [data]);
+
   const removeAll = useTableTooltipStore(state => state.removeAll);
   const columns = React.useMemo<ColumnDef<T>[]>(
     () =>
@@ -46,7 +55,8 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
 
             if (cellCondition && cellCondition.cellType === 'select') {
               const targetName = `${column.id}-${row.id}`;
-              const [selectedOptionValue, setSelectedOptionValue] = useState('');
+              const selectDefaultValue = !!cellCondition.isMultiple ? ([] as OptionValue[]) : '';
+              const [selectedOptionValue, setSelectedOptionValue] = useState(selectDefaultValue);
               const [tableTooltips, remove] = useTableTooltipStore(state => [state.tableTooltips, state.remove]);
               const showTooltip = tableTooltips.includes(targetName);
 
@@ -60,12 +70,12 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
 
               const handleMultipleChangeOption = (value: OptionValue[]) => {
                 const labelText = value.map(v => v.name).join(', ');
-                setSelectedOptionValue(labelText);
+                setSelectedOptionValue(value);
                 updateCpyData(row.index, column.id, labelText);
               };
 
               return (
-                <>
+                <div style={{ position: 'relative' }}>
                   <Select
                     label="계정과목선택"
                     placeholder="선택"
@@ -75,8 +85,8 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
                     options={cellCondition.options!}
                     isMultiple={!!cellCondition.isMultiple}
                   />
-                  {showTooltip && <div>{translate(column.id)}를 선택하세요</div>}
-                </>
+                  {showTooltip && <Tooltip>{josa(translate(column.id), '을/를')} 선택하세요</Tooltip>}
+                </div>
               );
             } else if (cellCondition && cellCondition.cellType === 'input' && cellCondition.condition?.(initialValue)) {
               const targetName = `${column.id}-${row.id}`;
@@ -92,6 +102,8 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
                   data => {
                     const value = Object.values(data)[0];
                     updateCpyData(row.index, column.id, value);
+                    console.log('onblur');
+
                     if (value && showTooltip) {
                       remove(targetName);
                     }
@@ -103,7 +115,7 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
               return (
                 <div style={{ position: 'relative' }}>
                   <input {...register(`${column.id}-${row.id}`)} onBlur={onBlur} />
-                  {<Tooltip>{translate(column.id)}를 입력하세요</Tooltip>}
+                  {showTooltip && <Tooltip>{josa(translate(column.id), '을/를')} 입력하세요</Tooltip>}
                 </div>
               );
             } else {
@@ -134,13 +146,26 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
               checked: row.getIsSelected(),
               disabled: !row.getCanSelect(),
               indeterminate: row.getIsSomeSelected(),
-              onChange: row.getToggleSelectedHandler(),
+              onChange: e => {
+                row.getToggleSelectedHandler()(e);
+                updateCheckedRow(row.original);
+              },
             }}
           />
         </div>
       ),
     });
   }
+
+  const updateCheckedRow = (row: T) => {
+    setCheckedRows(prevRows => {
+      const targetRow = prevRows.find(prevRow => prevRow.id === row.id);
+      if (targetRow) {
+        return prevRows.filter(prevRow => prevRow.id !== row.id);
+      }
+      return prevRows.concat(row);
+    });
+  };
 
   const updateCpyData = (rowIndex: number, columnId: string, value: string) => {
     setCpyData(prevCpyData => {
@@ -172,7 +197,7 @@ function useTable<T extends object>({ data, hideColumns, withCheckbox, cellCondi
     return () => removeAll();
   }, [data]);
 
-  return { tableRef, cpyData, updateCpyData, columns, rows, headers };
+  return { tableRef, cpyData, updateCpyData, columns, rows, headers, checkedRows };
 }
 
 export default useTable;
