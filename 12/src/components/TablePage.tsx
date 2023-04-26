@@ -6,6 +6,9 @@ import { useRouter } from 'next/router';
 import Pagination from './ui/pagination';
 import { Product } from '@/schemas/product';
 import useTableTooltipStore from '@/stores/tableTooltip';
+import styled from '@emotion/styled';
+import { StyledTableHeaderCell } from './ui/table/StyledTableHeaderCell';
+import { StyledTableCell } from './ui/table/StyledTableCell';
 
 export default function TablePage() {
   const router = useRouter();
@@ -63,11 +66,11 @@ export default function TablePage() {
   const { tableRef, cpyData, updateCpyData, columns, rows, headers, checkedRows } = useTable({
     data: tableData,
     hideColumns,
-    withCheckbox,
+    // withCheckbox,
     cellConditions,
   });
 
-  const addTableTooltipState = useTableTooltipStore(staet => staet.add);
+  const addTableTooltipState = useTableTooltipStore(state => state.add);
   const validateSelectedValues = () => {
     let allValid = true;
 
@@ -97,8 +100,43 @@ export default function TablePage() {
   return (
     <>
       <button onClick={handleButtonClick}>submit</button>
-      <TanstackTable<Product> data={rows} columns={columns} updateData={updateCpyData} />
+      <TableWrapper>
+        <LeftTable>
+          <Table>
+            <thead>
+              <tr>
+                <StyledTableHeaderCell>숫자</StyledTableHeaderCell>
+                <StyledTableHeaderCell>예산 관리 대상 예산부서</StyledTableHeaderCell>
+                <StyledTableHeaderCell>예산 관리 대상 계정과목</StyledTableHeaderCell>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <StyledTableCell groupingLineCount={3}>1</StyledTableCell>
+                <StyledTableCell groupingLineCount={3}>구매팀</StyledTableCell>
+                <StyledTableCell groupingLineCount={3}>여비교통비</StyledTableCell>
+              </tr>
+              <tr>
+                <StyledTableCell groupingLineCount={3}>1</StyledTableCell>
+                <StyledTableCell groupingLineCount={3}>구매팀</StyledTableCell>
+                <StyledTableCell groupingLineCount={3}>여비교통비</StyledTableCell>
+              </tr>
+            </tbody>
+          </Table>
+        </LeftTable>
+        <TanstackTable<Product> scrollable data={rows} columns={columns} />
+      </TableWrapper>
       <Pagination onClickPage={setPage} currentPageProps={currentPageFromQuery} totalPage={totalSize} />
     </>
   );
 }
+
+const TableWrapper = styled.div`
+  display: flex;
+`;
+const Table = styled.table`
+  min-width: 100%;
+  text-align: center;
+  flex-shrink: 0;
+`;
+const LeftTable = styled.div``;

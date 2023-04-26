@@ -13,7 +13,7 @@ interface TableCellProps<T> extends Pick<Cell<T, unknown>, 'getValue' | 'row' | 
   updateCpyData: (rowIndex: number, columnId: string, value: string) => void;
 }
 
-function TableCell<T>({ cellCondition, getValue, row, column, updateCpyData }: TableCellProps<T>) {
+function TableCellV2<T>({ cellCondition, getValue, row, column, updateCpyData }: TableCellProps<T>) {
   const initialValue = getValue() as string;
 
   if (cellCondition && cellCondition.cellType === 'select') {
@@ -84,4 +84,4 @@ function TableCell<T>({ cellCondition, getValue, row, column, updateCpyData }: T
   }
 }
 
-export default TableCell;
+export default TableCellV2;

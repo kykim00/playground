@@ -2,20 +2,21 @@ import { getCoreRowModel, useReactTable, flexRender, getFilteredRowModel, RowDat
 import { ColumnDef } from '@tanstack/react-table';
 import React from 'react';
 import styled from '@emotion/styled';
-
-declare module '@tanstack/react-table' {
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
-  }
-}
+import { StyledTableCell } from './ui/table/StyledTableCell';
+import { StyledTableHeaderCell } from './ui/table/StyledTableHeaderCell';
+import { css } from '@emotion/react';
 
 interface ReactTableProps<T extends object & { id: string | number }> {
   data: T[];
   columns: ColumnDef<T>[];
-  updateData: (rowIndex: number, columnId: string, value: string) => void;
+  scrollable?: boolean;
 }
 
-function TanstackTable<T extends object & { id: string | number }>({ data, columns, updateData }: ReactTableProps<T>) {
+function TanstackTable<T extends object & { id: string | number }>({
+  data,
+  columns,
+  scrollable = false,
+}: ReactTableProps<T>) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -29,24 +30,20 @@ function TanstackTable<T extends object & { id: string | number }>({ data, colum
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        updateData(rowIndex, columnId, value as string);
-      },
-    },
     getRowId: originalRow => originalRow.id as string,
     debugTable: true,
   });
+
   return (
-    <div className="flex flex-col">
-      <Table className="min-w-full text-center">
+    <div style={{ overflowX: 'auto' }}>
+      <Table className="min-w-full text-center" scrollable={scrollable}>
         <thead className="border-b bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <TableHeaderCell key={header.id} className="px-6 py-4 text-sm font-medium text-gray-900">
+                <StyledTableHeaderCell key={header.id} className="px-6 py-4 text-sm font-medium text-gray-900">
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHeaderCell>
+                </StyledTableHeaderCell>
               ))}
             </tr>
           ))}
@@ -55,33 +52,36 @@ function TanstackTable<T extends object & { id: string | number }>({ data, colum
           {table.getRowModel().rows.map(row => (
             <tr key={row.id} className='border-b" bg-white'>
               {row.getVisibleCells().map(cell => (
-                <TableCell className="whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900" key={cell.id}>
+                <StyledTableCell className="whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900" key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
+                </StyledTableCell>
               ))}
             </tr>
           ))}
         </tbody>
+        {/* <tfoot>
+          {table.getFooterGroups().map(footerGroup => (
+            <tr key={footerGroup.id}>
+              {footerGroup.headers.map(footer => (
+                <StyledTableHeaderCell key={footer.id}>
+                  {footer.isPlaceholder ? null : flexRender(footer.column.columnDef.footer, footer.getContext())}
+                </StyledTableHeaderCell>
+              ))}
+            </tr>
+          ))}
+        </tfoot> */}
       </Table>
     </div>
   );
 }
 
-const Table = styled.table`
+const Table = styled.table<{ scrollable: boolean }>`
   min-width: 100%;
   text-align: center;
-`;
-const TableHeaderCell = styled.th`
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
-`;
-const TableCell = styled.td`
-  white-space: nowrap;
-  padding: 8px 12px;
-  font-size: 12px;
-  input[type='checkbox'] {
-    margin-top: 2px;
-  }
+  ${({ scrollable }) =>
+    scrollable &&
+    css`
+      overflow-x: auto;
+    `}
 `;
 export default TanstackTable;

@@ -1,4 +1,6 @@
 import Dropdown from '@/components/Dropdown';
+import DateRangePicker from '@/components/ui/datepicker/DateRangePicker';
+import useDateRangePicker from '@/hooks/UI/useDateRangePicker';
 import { useState } from 'react';
 
 interface PageParams {
@@ -15,10 +17,12 @@ const formatDate = (targetDate: Date) => {
 const Page = ({ params }: PageParams) => {
   const [date, setDate] = useState(formatDate(new Date()));
 
+  const dateRangePickerState = useDateRangePicker();
   return (
     <>
       <h1>New Page</h1>
       <Dropdown date={date} setDate={setDate} />
+      <DateRangePicker {...dateRangePickerState} />
     </>
   );
 };
